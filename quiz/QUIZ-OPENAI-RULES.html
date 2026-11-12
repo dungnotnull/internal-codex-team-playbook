@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz 40 câu - Quy tắc làm việc với OpenAI / ChatGPT / Codex</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="topbar-row">
+        <p class="kicker">Team IT - Onboarding Quiz</p>
+        <nav id="lang-switch" class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="vi">Tiếng Việt</button>
+          <button type="button" class="lang-btn" data-lang="ja">日本語</button>
+        </nav>
+      </div>
+      <h1>Quy tắc làm việc với OpenAI / ChatGPT / Codex</h1>
+      <p class="sub">
+        40 câu · chấm điểm thang 10 · gồm câu chọn 1 đáp án và câu chọn nhiều đáp án.
+        Đọc kỹ <strong>WORKING-RULES-WITH-OPENAI.md</strong> trước khi làm bài.
+        Bài không lưu lịch sử - sau khi nộp, hệ thống chấm và hiển thị đáp án đúng + giải thích + link tài liệu tham khảo.
+      </p>
+      <div class="legend">
+        <span class="badge b-green">Đã trả lời</span>
+        <span class="badge b-multi">Câu multi-select</span>
+        <span class="badge plain">Dễ / TB / Khó = độ khó</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="quiz-root">
+    <form id="quiz-form" novalidate>
+      <section id="questions"></section>
+
+      <div class="submit-bar">
+        <div id="answered-summary" class="answered-summary">Câu đã trả lời: <strong id="answered-count">0/40</strong></div>
+        <button type="submit" id="btn-submit" class="btn-primary">Nộp bài - Chấm điểm</button>
+      </div>
+    </form>
+
+    <section id="result-panel" class="result-panel" hidden>
+      <div class="score-card" id="score-card"></div>
+      <div class="score-note" id="score-note"></div>
+      <div class="actions-row">
+        <button type="button" id="btn-retake" class="btn-ghost">Làm lại từ đầu</button>
+      </div>
+      <p class="review-hint" id="review-hint">Cuộn xuống dưới để xem từng câu: đánh giá đúng/sai, đáp án đúng, giải thích và link tham khảo.</p>
+    </section>
+  </main>
+
+  <footer class="footer wrap">
+    <p>
+      Nguồn quy tắc: WORKING-RULES-WITH-OPENAI.md · docs chính thức OpenAI (learn.chatgpt.com,
+      help.openai.com, platform.openai.com) + paper arXiv + OWASP GenAI. Toàn bộ link tham khảo đã được
+      kiểm tra tồn tại (HTTP 200 hoặc trích nguyên văn trong tài liệu chính thức) ngày 2026-11-12.
+    </p>
+  </footer>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

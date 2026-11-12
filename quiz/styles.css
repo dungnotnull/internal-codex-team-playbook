@@ -1,0 +1,242 @@
+/* ===== Quiz: Quy tắc làm việc với OpenAI/ChatGPT/Codex - styles ===== */
+* { box-sizing: border-box; }
+
+:root {
+  --bg: #f6f5f2;
+  --card: #ffffff;
+  --ink: #1f2933;
+  --muted: #5b6472;
+  --line: #e3e0da;
+  --accent: #2457d5;
+  --accent-ink: #ffffff;
+  --good: #157347;
+  --good-bg: #e8f5ee;
+  --bad: #b3261e;
+  --bad-bg: #fdeceb;
+  --warn: #8a5300;
+  --warn-bg: #fdf3e0;
+  --radius: 14px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", "SF Pro Text", Roboto, Arial, sans-serif;
+  line-height: 1.55;
+}
+
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+.topbar {
+  background: linear-gradient(180deg, #10315c, #164a86);
+  color: #fff;
+  padding: 34px 0 22px;
+  margin-bottom: 26px;
+}
+.topbar .kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  opacity: 0.85;
+  margin: 0 0 6px;
+}
+.topbar h1 { margin: 0 0 10px; font-size: 26px; line-height: 1.25; }
+.topbar .sub { margin: 0 0 12px; font-size: 14.5px; opacity: 0.92; max-width: 72ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.45);
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+.badge.b-green { background: #1f7a4d; border-color: #1f7a4d; }
+.badge.b-multi { background: #7c3aed; border-color: #7c3aed; }
+
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px 16px;
+  margin-bottom: 16px;
+}
+.q-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.q-num { font-weight: 700; color: var(--muted); font-size: 13px; }
+.q-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  font-size: 11.5px;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: #eef1f6;
+  color: #3c4657;
+  border: 1px solid #dde2ea;
+}
+.tag.t-multi { background: #f1e9ff; color: #6d28d9; border-color: #e2d5ff; }
+.tag.t-kho { background: #fdeceb; color: #b3261e; border-color: #f5cfcd; }
+.tag.t-tb { background: #fdf3e0; color: #8a5300; border-color: #f3dfb7; }
+.tag.t-de { background: #e8f5ee; color: #157347; border-color: #cdeada; }
+
+.q-text { font-size: 15.5px; font-weight: 600; margin: 6px 0 12px; }
+
+.opt {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.15s, border-color 0.15s;
+}
+.opt:hover { border-color: #b9c6da; }
+.opt input { margin-top: 3px; accent-color: var(--accent); }
+.opt .opt-text { font-size: 14.5px; }
+.opt.picked { border-color: var(--accent); background: #f0f5ff; }
+
+/* --- post-submit states --- */
+.opt.correct { border-color: var(--good); background: var(--good-bg); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.opt.missed { border-color: var(--warn); background: var(--warn-bg); }
+.q-card.r-correct { border-left: 4px solid var(--good); }
+.q-card.r-wrong { border-left: 4px solid var(--bad); }
+body.graded .opt { cursor: default; pointer-events: none; }
+body.graded .submit-bar { display: none; }
+
+.review-hint {
+  background: #eef1f6;
+  border: 1px solid #dde2ea;
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13.8px;
+}
+
+.q-result {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.q-result.correct { background: var(--good-bg); color: var(--good); }
+.q-result.wrong { background: var(--bad-bg); color: var(--bad); }
+.q-result .explain {
+  margin-top: 8px;
+  color: var(--ink);
+  background: #f4f6fa;
+  border: 1px solid #e2e7ef;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13.8px;
+  white-space: pre-line;
+}
+.refs {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+.refs a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted #93b0e3; }
+.refs a:hover { border-bottom-style: solid; }
+.refs .ref-title { font-weight: 600; color: var(--muted); }
+
+.submit-bar {
+  position: sticky;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffffee;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: 0 6px 22px rgba(23, 32, 44, 0.10);
+  margin: 22px 0 30px;
+  backdrop-filter: blur(4px);
+}
+.answered-summary { font-size: 14px; color: var(--muted); }
+
+.btn-primary {
+  background: var(--accent);
+  border: none;
+  color: var(--accent-ink);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.btn-primary:hover { background: #1d49b8; }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #b9c6da;
+  color: var(--ink);
+  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.btn-ghost:hover { background: #eef1f6; }
+
+.result-panel { margin-top: 26px; }
+.score-card {
+  background: linear-gradient(180deg, #10315c, #164a86);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 10px;
+}
+.score-card .points { font-size: 44px; font-weight: 800; line-height: 1; }
+.score-card .of { font-size: 18px; opacity: 0.8; }
+.score-card .meta { margin-top: 8px; font-size: 14px; opacity: 0.92; }
+.score-note {
+  background: var(--warn-bg);
+  border: 1px solid #f3dfb7;
+  color: var(--warn);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+.actions-row { margin-bottom: 18px; }
+
+.footer {
+  padding: 18px 20px 34px;
+  color: var(--muted);
+  font-size: 12.8px;
+}
+
+@media (max-width: 640px) {
+  .topbar h1 { font-size: 21px; }
+  .submit-bar { flex-direction: column; align-items: stretch; text-align: center; }
+}
+
+/* Language switcher (vi/ja) */
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 2px; }
+.lang-switch { display: inline-flex; gap: 6px; }
+.lang-btn {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.45);
+  color: #fff;
+  font-size: 12.5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.22); }
+.lang-btn.active { background: #fff; color: #10315c; font-weight: 700; border-color: #fff; }
