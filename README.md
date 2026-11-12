@@ -98,6 +98,8 @@ Anti-hallucination is a hard rule in this repo:
 ├── WORKING-RULES-WITH-OPENAI.md      # master rules doc (EN canonical; VI version in git history)
 ├── WORKING-RULES-WITH-OPENAI-VI.md   # Vietnamese edition, kept 1:1 with the EN canonical
 ├── WORKING-RULES-WITH-OPENAI.docx    # Word export of the EN canonical (Google Docs import)
+├── WORKING-RULES-WITH-OPENAI-VI.docx # Word export of the Vietnamese edition
+├── WORKING-RULES-WITH-OPENAI-JA.docx # Word export of the Japanese edition (translated from EN v1.2.1)
 ├── README.md
 ├── index.html                        # landing page (root for static hosting)
 ├── quiz/
