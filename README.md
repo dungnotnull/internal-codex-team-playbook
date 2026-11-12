@@ -49,8 +49,8 @@ Open `quiz/QUIZ-OPENAI-RULES.html` in any browser. No build step, no server, no 
 - **40 questions** across 8 categories, on a **10-point scale** (score shown to 2 decimals).
 - **10 multi-select questions** - graded by exact answer-set matching.
 - Category badges and difficulty tags on every question.
-- **Illustrated diagrams** (inline SVG, zero external requests) on 7 key questions - sandbox levels, protected paths, sign-in options, the requirement flow, the plan-to-PR loop, long-context compaction, and prompt-injection paths. Each figure also re-appears inside the per-question review panel after grading.
-- After submitting: per-question verdict, correct answers, your picks, an explanation, and **verified reference links** for wrong-and-right answers alike.
+- **Illustrated diagrams** (inline SVG, zero external requests) on 7 key questions - sandbox levels, protected paths, sign-in options, the requirement flow, the plan-to-PR loop, long-context compaction, and prompt-injection paths. Each figure re-appears inside the per-question review panel **after grading only**, so diagrams never reveal an answer before you submit. Two neutral, official-product illustrations (MCP request poster, IDE review screen) are also shown during the quiz because they do not disclose the correct option.
+- After submitting: per-question verdict, correct answers, your picks, an explanation, and **verified reference links** for wrong-and-right answers alike - plus a floating **"back to top"** button (VI/JA) that scrolls straight back to the score and review list.
 - Unanswered questions trigger a confirm dialog before grading.
 - **No answer history is stored anywhere.** The only persisted item is the UI language preference (`localStorage` key `quiz_lang`) - clear it via "retake" or devtools if you prefer.
 - **Languages: Vietnamese and Japanese.** Switch with the header buttons, or deep-link with `?lang=ja` (optional URL param).

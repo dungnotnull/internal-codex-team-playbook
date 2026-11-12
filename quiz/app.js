@@ -75,6 +75,8 @@
     answeredCountEl = document.getElementById("answered-count");
     document.getElementById("btn-submit").textContent = ui.submit;
     btnRetake.textContent = ui.retake;
+    var btEl = document.getElementById("backtop");
+    if (btEl) btEl.textContent = ui.backTop;
     reviewHint.textContent = ui.reviewHint;
     footerP.textContent = ui.footer;
   }
@@ -109,7 +111,8 @@
         '<div class="q-head"><span class="q-num">' + esc(fmt(ui.qNumFmt, i + 1, questions.length)) + "</span>" +
         '<span class="q-tags">' + tags + "</span></div>" +
         '<div class="q-text">' + esc(item.q) + "</div>" +
-        (item.img && window.QUIZ_DIAGRAMS && window.QUIZ_DIAGRAMS[item.img]
+        (item.img && window.QUIZ_DIAGRAM_PRE && window.QUIZ_DIAGRAM_PRE.indexOf(item.img) !== -1 &&
+          window.QUIZ_DIAGRAMS && window.QUIZ_DIAGRAMS[item.img]
           ? '<figure class="q-img">' + window.QUIZ_DIAGRAMS[item.img] +
             '<figcaption>' + esc(item.imgNote || "") + "</figcaption></figure>"
           : "") +
@@ -290,6 +293,14 @@
       if (l && l !== lang) setLang(l);
     });
   });
+
+  var backTop = document.createElement("button");
+  backTop.id = "backtop";
+  backTop.type = "button";
+  backTop.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.body.appendChild(backTop);
 
   lang = initialLang();
   renderQuestions();

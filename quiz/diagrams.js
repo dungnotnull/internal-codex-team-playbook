@@ -147,3 +147,6 @@ window.QUIZ_DIAGRAMS = {
   "ideshot": '<img class="shot" src="img/ide-review.webp" alt="Codex review in the IDE - official illustration" onerror="this.style.display=\'none\'">'
 
 };
+
+/* Diagrams safe to show BEFORE submit (do not reveal the answer). All others only appear after grading. */
+window.QUIZ_DIAGRAM_PRE = ["mcpshot", "ideshot"];
