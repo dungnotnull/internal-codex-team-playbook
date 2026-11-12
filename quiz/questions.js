@@ -129,6 +129,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0, 1, 2],
         note: "Tài liệu 'Agent approvals & security' và Config reference: sandbox_mode thuộc tập read-only | workspace-write | danger-full-access. Chú ý 'untrusted' là approval_policy đã bị gỡ khỏi Codex - không phải sandbox mode; 'network-only' không tồn tại (network là setting riêng: sandbox_workspace_write.network_access).",
+        img: "sandbox",
+        imgNote: "Sơ đồ: 3 mức sandbox - chặt tới mở. Mặc định khuyến nghị cho repo: workspace-write + approval on-request.",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" },
           { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
@@ -203,6 +205,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0, 1, 2, 3],
         note: "Docs 'Agent approvals & security': trong writable roots, các path .git, .agents, .codex, .aws được bảo vệ read-only (kể cả đệ quy). Cơ chế: tránh agent tự sửa cấu hình agent, credentials AWS hoặc phá lịch sử git; node_modules/src không nằm trong danh sách đặc biệt này.",
+        img: "paths",
+        imgNote: "Chỉ 4 thư mục hệ thống bị khóa; phần còn lại của workspace agent ghi được.",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
         ]
@@ -405,6 +409,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "Theo docs 'Authentication': Codex có 2 cách sign-in cho local clients - 'Sign in with ChatGPT' (subscription access; usage theo workspace) và 'Sign in with an API key' (usage-based, bill qua tài khoản Platform theo giá API chuẩn; là lựa chọn mặc định tự nhiên cho automation - CODEX_API_KEY dùng được với codex exec/review/SDK). 'Codex cloud requires signing in with ChatGPT' và 'API keys and Codex access tokens do not enable Local computer access with Work Cloud'.",
+        img: "auth",
+        imgNote: "Hai cách đăng nhập Codex: khác nhau ở bill và quyền truy cập Cloud.",
         refs: [
           { label: "Authentication - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/auth" },
           { label: "Help: Using Codex with your ChatGPT plan", url: "https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan" }
@@ -458,6 +464,8 @@ window.QUIZ_DATA = {
         ],
         correct: [1],
         note: "Prompt injection: dữ liệu không tin được (web, file, mail, PR...) có thể chứa chỉ thị nhắm vào agent. Đối sách mức quy trình: nội dung ngoài vào workspace có sandbox chặt + approval on-request; ưu tiên web_search mode 'cached'/'indexed' thay 'live'; không cho agent quyền send/publish/deploy không kiểm soát; rà OWASP LLM Top 10 như checklist.",
+        img: "injection",
+        imgNote: "Lệnh nhúng trông như dữ liệu: agent đọc và có thể 'làm theo'.",
         refs: [
           { label: "OWASP GenAI - LLM Top 10 for 2025", url: "https://genai.owasp.org/llm-top-10/" },
           { label: "Web search - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/web-search" }
@@ -553,20 +561,21 @@ window.QUIZ_DATA = {
         ]
       },
       {
-        cat: "AGENTS.md & cấu hình",
-        diff: "medium",
+        cat: "Sandbox & quyền",
+        diff: "hard",
         multi: false,
-        q: "Codex đọc cấu hình từ đâu?",
+        q: "Muốn CHẶN chủ động những lệnh nguy hiểm (vd: rm -rf, curl | bash) trước khi chúng chạy ngoài sandbox trong Codex, dùng cơ chế nào?",
         options: [
-          "User-level ~/.codex/config.toml + project-scoped .codex/config.toml; profile riêng dạng $CODEX_HOME/<tên>.config.toml",
-          "Chỉ đọc config nằm trong repo, không có config user-level",
-          "Chỉ chỉnh qua GUI, không có file cấu hình",
-          "Mỗi lần chạy sẽ hỏi lại toàn bộ cấu hình"
+          "Rules file: khai báo prefix_rule(pattern, decision = 'forbidden' hoặc 'prompt') trong file .rules (vd ~/.codex/rules/default.rules); Codex quét rules/ lúc khởi động và áp quyết định chặt nhất khi nhiều rule cùng khớp (forbidden > prompt > allow)",
+          "Model tự biết lệnh nào nguy hiểm, không cần cấu hình",
+          "Nhét hết lệnh an toàn vào AGENTS.md là đủ chặn",
+          "Không thể chặn lệnh, chỉ có cách tắt network"
         ],
         correct: [0],
-        note: "Docs 'Config reference': user config ở ~/.codex/config.toml; project override ở .codex/config.toml; profile là file $CODEX_HOME/<tên>.config.toml. Chú ý: key provider/notification/telemetry nên đặt ở user-level, không nhét vào project config - tránh repo thay đổi cấu hình máy mỗi người.",
+        note: "Docs 'Rules' (experimental): tạo file .rules dưới thư mục rules/ thuộc config layer đang active (~/.codex/rules/default.rules; project <repo>/.codex/rules/ chỉ load khi project layer được trusted). prefix_rule khớp tiền tố lệnh với decision = allow | prompt | forbidden; khi nhiều rule khớp, Codex áp quyết định CHẶT nhất (forbidden > prompt > allow); match/not_match đóng vai trò 'inline unit tests' kiểm rule ngay khi load. Lệnh compound (bash -lc 'a && b') được tách bằng tree-sitter khi script là chuỗi tĩnh an toàn. Bonus: khi bạn bấm allow trong TUI, Codex tự ghi prefix_rule vào ~/.codex/rules/default.rules để lần sau không hỏi lại.",
         refs: [
-          { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
+          { label: "Rules - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-configuration/rules" },
+          { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
         ]
       },
       {
@@ -671,6 +680,8 @@ window.QUIZ_DATA = {
         ],
         correct: [1],
         note: "Docs Long-running work: outcome chưa rõ thì bắt đầu bằng /plan (Plan mode cho Codex 'gather context + ask clarifying questions' - tức interview requirement); sau đó /goal với 3 thành phần khi áp dụng: Outcome (kết quả, vd: CRUD xe + hợp đồng + báo cáo), Constraints (framework, auth, chuẩn dữ liệu), Verification (test/API check làm bằng chứng xong). Áp cho hệ quản lý xe: nêu module xe/bãi/hợp đồng, ràng buộc stack + quy ước, và criteria 'test pass + demo flow đăng ký xe' trước khi code.",
+        img: "flowreq",
+        imgNote: "Flow phân tích requirement: /plan hỏi trước - code sau.",
         refs: [
           { label: "Long-running work - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/long-running-work" },
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" }
@@ -689,6 +700,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "Best practices: agent phải biết build/test/lint commands và 'what done means & how to verify' (nên nằm trong AGENTS.md); không chỉ bảo 'sinh code' - yêu cầu Codex tự viết test khi cần, chạy đúng test suite, confirm kết quả rồi review changes; Long-running: 'verification = tests, measurements, review criteria chứng minh xong'. Ví dụ dự án xyz: spec ghi rõ 'API tạo/đổi trạng thái xe trả 200 + có test pytest pass + lint 0 warning'.",
+        img: "flow",
+        imgNote: "Chu kỳ làm việc có verify sau mỗi phần: fail thì quay lại fix.",
         refs: [
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" },
           { label: "Long-running work - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/long-running-work" }
@@ -707,6 +720,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "Best practices liệt kê: /resume (mở lại chat đã lưu), /compact (tóm tắt context khi chat dài; ngoài ra Codex tự compact - có config model_auto_compact_token_limit), /status (trạng thái phiên); trong lúc chạy Enter = steer, Tab = queue. Nguyên tắc long-running: việc liên quan giữ cùng chat để dùng lại context; việc độc lập mới tách chat.",
+        img: "session",
+        imgNote: "Ngữ cảnh dài được nén lại: /compact (tự động theo cấu hình) + /resume + /status.",
         refs: [
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" },
           { label: "Long-running work - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/long-running-work" }
@@ -895,6 +910,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0, 1, 2],
         note: "'Agent approvals & security' と Config reference: sandbox_mode は read-only | workspace-write | danger-full-access の3値。'untrusted' は廃止された approval_policy であってサンドボックスモードではない。'network-only' という値は存在しない (ネットワークは sandbox_workspace_write.network_access の個別設定)。",
+        img: "sandbox",
+        imgNote: "3段階のサンドボックス。リポジトリの既定推奨は workspace-write + approval on-request。",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" },
           { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
@@ -969,6 +986,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0, 1, 2, 3],
         note: "公式: writable roots 内でも .git / .agents / .codex / .aws は read-only 保護 (再帰的)。エージェントが設定・AWS認証情報・Git履歴を壊すのを防ぐ仕組み。node_modules や src はこの特別保護の対象外。",
+        img: "paths",
+        imgNote: "特別4パスは保護、それ以外は編集可能。",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
         ]
@@ -1171,6 +1190,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "公式 'Authentication': ローカルクライアントのサインインは2方式 - 'Sign in with ChatGPT' (プラン枠、使用量はワークスペースに従う) と 'Sign in with an API key' (従量制、標準API料金)。'Codex cloud requires signing in with ChatGPT'、且つ 'API keys and Codex access tokens do not enable Local computer access with Work Cloud'。",
+        img: "auth",
+        imgNote: "2つのサインイン方法: 課金とクラウド権限が異なる。",
         refs: [
           { label: "Authentication - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/auth" },
           { label: "Help: Using Codex with your ChatGPT plan", url: "https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan" }
@@ -1224,6 +1245,8 @@ window.QUIZ_DATA = {
         ],
         correct: [1],
         note: "プロンプトインジェクション: 信頼できないデータ (web・ファイル・メール・PR等) がエージェント向けの指示を含み得る。対処: 外部コンテンツは厳しいサンドボックス+承認 on-request で扱い、web_search は 'live' より 'cached'/'indexed' を優先、agent に無制限の送信/公開/デプロイ権限を与えない。OWASP LLM Top 10 をチェックリストとして使用。",
+        img: "injection",
+        imgNote: "命令がデータに紛れた形: エージェントが読むと従う可能性。",
         refs: [
           { label: "OWASP GenAI - LLM Top 10 for 2025", url: "https://genai.owasp.org/llm-top-10/" },
           { label: "Web search - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/web-search" }
@@ -1319,20 +1342,21 @@ window.QUIZ_DATA = {
         ]
       },
       {
-        cat: "AGENTS.mdと設定",
-        diff: "medium",
+        cat: "サンドボックスと権限",
+        diff: "hard",
         multi: false,
-        q: "Codex は設定をどこから読むか?",
+        q: "サンドボックス外で危険なコマンド (例: rm -rf, curl | bash) を実行前に CODEX で積極的にブロックする仕組みは?",
         options: [
-          "ユーザー設定 ~/.codex/config.toml + プロジェクト設定 .codex/config.toml。プロファイルは $CODEX_HOME/<名前>.config.toml",
-          "リポジトリ内の設定のみ、ユーザー設定は無い",
-          "GUI からのみ変更、設定ファイルは無い",
-          "毎回実行時に全部質問される"
+          "Rules ファイル: prefix_rule(pattern, decision = 'forbidden' または 'prompt') を .rules (例: ~/.codex/rules/default.rules) に宣言。Codex は起動時に rules/ を走査し、複数ルール一致時は最も厳しい決定を適用 (forbidden > prompt > allow)",
+          "モデルが危険コマンドを自覚しているので設定不要",
+          "安全なコマンドを AGENTS.md に全部書けばブロックできる",
+          "コマンドはブロック不可、ネットワークを切るだけ"
         ],
         correct: [0],
-        note: "公式 'Config reference': ユーザー設定は ~/.codex/config.toml、プロジェクト オーバーライドは .codex/config.toml、プロファイルは $CODEX_HOME/<名前>.config.toml。provider/notification/telemetry の鍵はユーザー設定に置くべき (リポジトリに置かない)。",
+        note: "公式 'Rules' (実験的): rules/ 配下に .rules を作成 (ユーザー層 ~/.codex/rules/default.rules。プロジェクト <repo>/.codex/rules/ は layer が trusted のときのみ読込)。prefix_rule はコマンド接頭辞に一致し decision = allow | prompt | forbidden。複数一致時は最も厳しい決定が優先。match / not_match はロード時のインライン検証。bash -lc 等の複合コマンドは静的文字列なら tree-sitter で分割してルール適用。TUI で allow を選ぶと ~/.codex/rules/default.rules へ自動保存される。",
         refs: [
-          { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
+          { label: "Rules - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-configuration/rules" },
+          { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
         ]
       },
       {
@@ -1437,6 +1461,8 @@ window.QUIZ_DATA = {
         ],
         correct: [1],
         note: "公式 Long-running work: 成果が曖昧なら最初に /plan (Plan mode は context 収集と 'clarifying questions' = 要件ヒアリング)。その後 /goal で3要素を含める: Outcome (例: 車両/契約/レポートの CRUD)、Constraints (フレームワーク、認証、データ規約)、Verification (テスト合格や API 確認)。完了基準を先に固めてから実装する。",
+        img: "flowreq",
+        imgNote: "要件分析フロー: 先に /plan、後に実装。",
         refs: [
           { label: "Long-running work - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/long-running-work" },
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" }
@@ -1455,6 +1481,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "Best practices: エージェントには build/test/lint コマンドと 'done の定義と検証方法' を伝える (AGENTS.md に記すのが望ましい)。コード生成だけでなく 'test 作成 - 関連 test suite 実行 - 結果確認 - レビュー' まで依頼する。例: 『車両 API は 200 を返し pytest 合格、lint 警告 0』。",
+        img: "flow",
+        imgNote: "部分ごとに検証するサイクル: 失敗したら修正して繰り返す。",
         refs: [
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" },
           { label: "Long-running work - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/long-running-work" }
@@ -1473,6 +1501,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "Best practices の slash コマンド: /resume (保存チャットの再開)、/compact (チャントが長くなった時の文脈要約。Codex は自動 compact も行い、model_auto_compact_token_limit で調整)、/status (セッション状態)。実行中は Enter/Tab で steer/queue。関連業務は同じチャットで文脈を再利用。",
+        img: "session",
+        imgNote: "長い文脈の圧縮: /compact (自動もあり) + /resume + /status。",
         refs: [
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" },
           { label: "Long-running work - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/long-running-work" }

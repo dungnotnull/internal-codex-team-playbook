@@ -49,6 +49,7 @@ Open `quiz/QUIZ-OPENAI-RULES.html` in any browser. No build step, no server, no 
 - **40 questions** across 8 categories, on a **10-point scale** (score shown to 2 decimals).
 - **10 multi-select questions** - graded by exact answer-set matching.
 - Category badges and difficulty tags on every question.
+- **Illustrated diagrams** (inline SVG, zero external requests) on 7 key questions - sandbox levels, protected paths, sign-in options, the requirement flow, the plan-to-PR loop, long-context compaction, and prompt-injection paths. Each figure also re-appears inside the per-question review panel after grading.
 - After submitting: per-question verdict, correct answers, your picks, an explanation, and **verified reference links** for wrong-and-right answers alike.
 - Unanswered questions trigger a confirm dialog before grading.
 - **No answer history is stored anywhere.** The only persisted item is the UI language preference (`localStorage` key `quiz_lang`) - clear it via "retake" or devtools if you prefer.
@@ -59,9 +60,9 @@ Open `quiz/QUIZ-OPENAI-RULES.html` in any browser. No build step, no server, no 
 | Category | Questions |
 |---|---|
 | Codex & workflow | 19 |
-| Sandbox & permissions | 6 |
-| AGENTS.md & configuration | 5 |
+| Sandbox & permissions | 7 |
 | Prompting / security / policy / HITL / anti-patterns | 10 |
+| AGENTS.md & configuration | 4 |
 
 ## 🚀 Quick start
 
@@ -83,7 +84,7 @@ Optional: enable GitHub Pages on `quiz/` for a shareable URL, e.g. `https://<you
 
 Anti-hallucination is a hard rule in this repo:
 
-- Every reference URL in the quiz and the rules doc was verified on **2026-11-12** by direct HTTP check (HTTP 200) or was quoted verbatim inside an officially-fetched documentation page.
+- Every reference URL in the quiz and the rules doc was verified on **2026-11-12** by direct HTTP check (HTTP 200) or was quoted verbatim inside an officially-fetched documentation page (30 unique references in the quiz).
 - `agents.md`, arXiv, and OWASP external links were re-verified the same day.
 - No generated, guessed, or "plausible-sounding" links are allowed. If a link fails verification, it gets cut.
 
@@ -93,8 +94,10 @@ Anti-hallucination is a hard rule in this repo:
 .
 ├── WORKING-RULES-WITH-OPENAI.md      # master rules doc (VI)
 ├── README.md
+├── index.html                        # landing page (root for static hosting)
 ├── quiz/
 │   ├── QUIZ-OPENAI-RULES.html        # quiz entry page (i18n switcher)
+│   ├── diagrams.js                   # inline SVG illustrations
 │   ├── questions.js                  # 40 questions x 2 locales
 │   ├── app.js                        # grading engine + i18n runtime
 │   └── styles.css

@@ -109,6 +109,10 @@
         '<div class="q-head"><span class="q-num">' + esc(fmt(ui.qNumFmt, i + 1, questions.length)) + "</span>" +
         '<span class="q-tags">' + tags + "</span></div>" +
         '<div class="q-text">' + esc(item.q) + "</div>" +
+        (item.img && window.QUIZ_DIAGRAMS && window.QUIZ_DIAGRAMS[item.img]
+          ? '<figure class="q-img">' + window.QUIZ_DIAGRAMS[item.img] +
+            '<figcaption>' + esc(item.imgNote || "") + "</figcaption></figure>"
+          : "") +
         opts +
         '<div class="q-result" id="qr' + i + '" hidden></div>' +
         "</div>";
@@ -158,6 +162,11 @@
           esc(r.label) + "</a>";
       })
       .join('<span class="sep"> · </span>');
+    var fig =
+      item.img && window.QUIZ_DIAGRAMS && window.QUIZ_DIAGRAMS[item.img]
+        ? '<figure class="q-img small">' + window.QUIZ_DIAGRAMS[item.img] +
+          '<figcaption>' + esc(item.imgNote || "") + "</figcaption></figure>"
+        : "";
     return (
       '<div class="explain">' +
       "<strong>" + esc(ui.explain) + "</strong>" + esc(item.note) +
@@ -165,7 +174,8 @@
       (refsHtml
         ? '<div class="refs"><span class="ref-title">' + esc(ui.refsLabel) + "</span> " +
           refsHtml + "</div>"
-        : "")
+        : "") +
+      fig
     );
   }
 
