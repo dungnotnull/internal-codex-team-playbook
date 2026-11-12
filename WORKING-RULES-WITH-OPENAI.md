@@ -203,6 +203,8 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 
 Hard rule: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) is **"not recommended"** in the official docs. Whoever needs full access must run inside a container + have lead approval.
 
+**Protected paths inside writable roots:** even under the default `workspace-write` policy, a few paths are always protected read-only, recursively: `.git` (directory or pointer file - the resolved Git directory too), `.agents`, `.codex`, `.aws`. That is how Codex prevents the agent from rewriting its own configuration, AWS credentials, or git history. Everything else in the writable root stays writable; ordinary folders like `node_modules` or `src` are not on this special list.
+
 ### 5.3 Network access
 
 - `workspace-write` has the network **off by default**. To allow it: `[sandbox_workspace_write] network_access = true` + (if you enable `features.network_proxy`) **domain allowlists** (the denied list always wins).
