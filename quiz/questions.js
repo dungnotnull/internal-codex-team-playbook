@@ -316,7 +316,7 @@ window.QUIZ_DATA = {
           "codex exec không hỗ trợ sandbox, phải set biến môi trường riêng"
         ],
         correct: [0],
-        note: "Theo docs 'Non-interactive mode': codex exec chạy progress ra stderr, kết quả cuối ra stdout (dùng --json để parse, -o <file> --output-last-message để ghi kết quả cuối, --ephemeral cho việc không đụng repo); MẶC ĐỊNH là read-only sandbox, cho phép sửa file bằng --sandbox workspace-write, full access bằng danger-full-access; '--full-auto is no longer supported'. CI dùng CODEX_API_KEY=<api-key> codex exec --json để cấp credential tường minh.",
+        note: "Theo docs 'Non-interactive mode': codex exec chạy progress ra stderr, kết quả cuối ra stdout (dùng --json để parse, -o <file> --output-last-message để ghi kết quả cuối, --ephemeral khi không muốn lưu session rollout files xuống disk); MẶC ĐỊNH là read-only sandbox, cho phép sửa file bằng --sandbox workspace-write, full access bằng danger-full-access; '--full-auto is no longer supported'. CI dùng CODEX_API_KEY=<api-key> codex exec --json để cấp credential tường minh.",
         refs: [
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" },
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
@@ -372,7 +372,7 @@ window.QUIZ_DATA = {
           "Kể chuyện với model"
         ],
         correct: [1],
-        note: "Theo docs 'Prompting' và 'Best practices': với việc đa bước, dùng Plan mode (/plan, hoặc Shift+Tab) để Codex thu thập ngữ cảnh và hỏi rõ trước khi code; có Goal mode (/goal) cho mục tiêu dài hạn. Đây là cách giảm hành động sai hướng khi việc còn mơ hồ.",
+        note: "Theo docs 'Prompting' và 'Best practices': với việc đa bước, dùng Plan mode (/plan) để Codex thu thập ngữ cảnh và hỏi rõ trước khi code; có Goal mode (/goal) cho mục tiêu dài hạn. Đây là cách giảm hành động sai hướng khi việc còn mơ hồ.",
         refs: [
           { label: "Prompting - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/prompting" },
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" }
@@ -629,7 +629,7 @@ window.QUIZ_DATA = {
           "codex exec không hỗ trợ tự động hóa"
         ],
         correct: [0],
-        note: "Docs 'Non-interactive mode': codex exec streaming progress ra stderr in kết quả cuối ra stdout - dễ pipe/tách; mẫu CI trong docs: CODEX_API_KEY=<api-key> codex exec --json \"...\"; có cờ -o <path>/--output-last-message ghi message cuối ra file, --ephemeral cho việc không đụng repo.",
+        note: "Docs 'Non-interactive mode': codex exec streaming progress ra stderr in kết quả cuối ra stdout - dễ pipe/tách; mẫu CI trong docs: CODEX_API_KEY=<api-key> codex exec --json \"...\"; có cờ -o <path>/--output-last-message ghi message cuối ra file, --ephemeral khi không muốn lưu session rollout files xuống disk.",
         refs: [
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" }
         ]
@@ -1102,7 +1102,7 @@ window.QUIZ_DATA = {
           "codex exec はサンドボックス非対応、環境変数で別途設定する"
         ],
         correct: [0],
-        note: "公式 'Non-interactive mode': codex exec は進行状況を stderr、最終メッセージを stdout へ (--json でパース、-o <file> --output-last-message で最終結果を保存、--ephemeral でリポジトリ非永続)。デフォルトは read-only、編集許可は --sandbox workspace-write、公式より --full-auto は廃止。CI は CODEX_API_KEY=<api-key> codex exec --json で認証を明示。",
+        note: "公式 'Non-interactive mode': codex exec は進行状況を stderr、最終メッセージを stdout へ (--json でパース、-o <file> --output-last-message で最終結果を保存、--ephemeral でセッション rollout ファイルをディスクに残さない)。デフォルトは read-only、編集許可は --sandbox workspace-write、公式より --full-auto は廃止。CI は CODEX_API_KEY=<api-key> codex exec --json で認証を明示。",
         refs: [
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" },
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
@@ -1158,7 +1158,7 @@ window.QUIZ_DATA = {
           "モデルとの雑談用"
         ],
         correct: [1],
-        note: "公式 'Prompting'/'Best practices': 多段階タスクでは /plan (Shift+Tab) で文脈収集と曖昧点の質問を先に行う。長期目標には /goal。曖昧なまま行動させないための仕組み。",
+        note: "公式 'Prompting'/'Best practices': 多段階タスクでは /plan で文脈収集と曖昧点の質問を先に行う。長期目標には /goal。曖昧なまま行動させないための仕組み。",
         refs: [
           { label: "Prompting - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/prompting" },
           { label: "Best practices - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" }
