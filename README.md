@@ -21,7 +21,7 @@ When a team starts using ChatGPT/Codex for real project work, the first question
 
 | Path | What it is | Language |
 |---|---|---|
-| [`WORKING-RULES-WITH-OPENAI.md`](WORKING-RULES-WITH-OPENAI.md) | 12-section working rules + daily checklist + cheatsheet | 🇻🇳 Vietnamese |
+| [`WORKING-RULES-WITH-OPENAI.md`](WORKING-RULES-WITH-OPENAI.md) | 12-section working rules + daily checklist + cheatsheet | 🌐 English (canonical) |
 | [`quiz/QUIZ-OPENAI-RULES.html`](quiz/QUIZ-OPENAI-RULES.html) | 40-question grading quiz (no backend, no database) | 🇻🇳 / 🇯🇵 switcher |
 | `research/` | Evidence corpus: downloaded official docs + researched notes | English |
 
@@ -94,7 +94,7 @@ Anti-hallucination is a hard rule in this repo:
 
 ```
 .
-├── WORKING-RULES-WITH-OPENAI.md      # master rules doc (VI)
+├── WORKING-RULES-WITH-OPENAI.md      # master rules doc (EN canonical; VI version in git history)
 ├── README.md
 ├── index.html                        # landing page (root for static hosting)
 ├── quiz/
