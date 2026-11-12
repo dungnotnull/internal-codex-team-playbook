@@ -32,7 +32,7 @@ window.QUIZ_DATA = {
       explain: "Giải thích: ",
       refsLabel: "Tài liệu tham khảo (link đã kiểm tra 2026-11-12):",
       retake: "Làm lại từ đầu",
-      backTop: "⬆ Về đầu trang",
+      backTop: "⬆ Lên đầu trang - xem giải thích",
       reviewHint: "Cuộn xuống dưới để xem từng câu: đánh giá đúng/sai, đáp án đúng, giải thích và link tham khảo.",
       confirmUnansweredFmt: "Bạn còn {0} câu chưa trả lời (câu: {1}).\n\nChọn 'OK' để nộp bài (câu bỏ trống sẽ bị tính sai), hoặc 'Cancel' để quay lại làm nốt.",
       multiBadge: "Chọn nhiều đáp án",
@@ -45,18 +45,18 @@ window.QUIZ_DATA = {
         cat: "Chính sách & tài khoản",
         diff: "easy",
         multi: false,
-        q: "Workspace ChatGPT Business (kỳ thanh toán năm, tối thiểu 2 users) được mô tả trong tài liệu chính thức là:",
+        q: "Làm việc với codebase và dữ liệu dự án, member nên dùng ChatGPT/Codex trên môi trường nào?",
         options: [
-          "Dữ liệu business được dùng để huấn luyện mô hình theo mặc định",
-          "Không dùng dữ liệu business để huấn luyện theo mặc định, có admin console, SAML SSO/MFA",
-          "Chỉ dành cho cá nhân, không có admin",
-          "Bắt buộc mua credits riêng để dùng Codex"
+          "Workspace ChatGPT Business của team: dedicated workspace, có quản trị + SAML SSO/MFA, mặc định KHÔNG dùng dữ liệu business để huấn luyện",
+          "Tài khoản cá nhân - mọi workspace có mức bảo mật như nhau",
+          "Tài khoản cá nhân với chế độ ẩn danh - không cần quản trị",
+          "Workspace nào cũng được, miễn không tốn phí team"
         ],
-        correct: [1],
-        note: "Theo trang Pricing (ChatGPT Learn) và Help Center 'Using Codex with your ChatGPT plan': gói Business $20/người/tháng (kỳ năm) - $25 nếu tính tháng, tối thiểu 2 users - với workspace riêng, SAML SSO/MFA và mặc định KHÔNG dùng dữ liệu business để huấn luyện. Team dùng đúng workspace này cho công việc dự án.",
+        correct: [0],
+        note: "Theo 'Pricing' và help 'Using Codex with your ChatGPT plan': công việc dự án chạy trên workspace ChatGPT Business của team - dedicated workspace với admin controls, SAML SSO/MFA và mặc định KHÔNG dùng dữ liệu business để huấn luyện. Không trộn công việc dự án vào tài khoản cá nhân; cách xử lý dữ liệu nhạy cảm xem nhóm câu Bảo mật dữ liệu.",
         refs: [
           { label: "Pricing - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/pricing" },
-          { label: "Help: Using Codex with your ChatGPT plan", url: "https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan" }
+          { label: "Help: Data controls in ChatGPT", url: "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt" }
         ]
       },
       {
@@ -249,21 +249,22 @@ window.QUIZ_DATA = {
         ]
       },
       {
-        cat: "AGENTS.md & cấu hình",
-        diff: "easy",
+        cat: "Codex & workflow",
+        diff: "medium",
         multi: false,
-        q: "Quy tắc bắt buộc của team (must-always-apply) nên được lưu ở đâu?",
+        q: "Team muốn khai thác thêm skills (khả năng đóng gói quy trình) cho Codex - cách làm đúng là gì?",
         options: [
-          "Trong memory cá nhân của assistant, để tiện tự nhớ",
-          "Quyết định tại phiên chat, để tự phát",
-          "Trong AGENTS.md / tài liệu được commit trong repo",
-          "Trong file ghi chú cá nhân ngoài repo"
+          "Tham khảo thư viện skills.sh (directory skill cho AI agent, tổng hợp từ các GitHub repo nổi bật), review nội dung SKILL.md như review code rồi cài vào .agents/skills của repo để dùng chung; theo dõi tin tức AI agent để cập nhật skill mới",
+          "Internet có skill nào thì cài, skill luôn an toàn",
+          "Có skills rồi thì không cần AGENTS.md và docs chính thức nữa",
+          "Skill chỉ team OpenAI mới tạo được"
         ],
-        correct: [2],
-        note: "Docs 'Memories' nói rõ: giữ quy tắc bắt buộc trong AGENTS.md hoặc tài liệu được commit; memory chỉ là 'lớp recall' (và local Codex memories mặc định TẮT) - không phải nguồn quy tắc đáng tin cậy cho compliance.",
+        correct: [0],
+        note: "Theo docs 'Customization overview' và guide 'Best practices': skill là thư mục chứa SKILL.md (instructions + metadata); personal skills ở $HOME/.agents/skills, skill dùng chung team được commit vào .agents/skills trong repo; $skill-creator hỗ trợ tạo khung ban đầu. skills.sh là 'The Agent Skills Directory' (verify HTTP 200 ngày 2026-11-12) - nơi khám phá skill từ nhiều GitHub repos prominent. Với skill nguồn ngoài: luôn review quyền/lệnh và nguồn dữ liệu trong SKILL.md như review một PR trước khi cài; theo dõi tin tức AI agent và release notes để cập nhật.",
         refs: [
-          { label: "Memories - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/customization/memories" },
-          { label: "AGENTS.md - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-configuration/agents-md" }
+          { label: "skills.sh - The Agent Skills Directory", url: "https://skills.sh" },
+          { label: "Customization overview - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/customization/overview" },
+          { label: "Best practices guide - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" }
         ]
       },
       {
@@ -658,18 +659,18 @@ window.QUIZ_DATA = {
         cat: "Codex & workflow",
         diff: "medium",
         multi: false,
-        q: "Khi thanh toán theo plan ChatGPT, chọn model + effort trong Codex thế nào là đúng?",
+        q: "Chiến lược chọn model trong Codex để cân bằng chất lượng và cost cho team?",
         options: [
-          "Luna nhẹ/nhanh nhất cho sửa nhỏ - trích xuất dữ liệu; Astra mạnh nhất - mặc định khi không cần tiết kiệm; Sol/Terra cân bằng; effort cao hơn tốn usage nhiều hơn",
-          "Chỉ cần GPT-6.1 Sol/Terra là rẻ nhất cho mọi việc",
-          "Model chỉ đổi được trong dashboard admin, CLI không đổi được",
-          "Effort không ảnh hưởng tới mức tốn usage"
+          "Model suy luận mạnh cho các việc 'nghĩ': phân tích, lập plan/spec, viết docs, brainstorming, review phức tạp; model nhanh/rẻ hơn cho các việc 'làm': thực thi theo spec rõ ràng, refactor nhỏ, chạy test lặp lại",
+          "Luôn dùng model mạnh nhất cho mọi tác vụ, kể cả việc lặp lại đơn giản",
+          "Luôn dùng model rẻ nhất, vì chất lượng hoàn toàn do prompt quyết định",
+          "Model không ảnh hưởng đến usage/cost"
         ],
         correct: [0],
-        note: "Docs 'Model selection': Luna là model 'most efficient', Astra 'state-of-the-art, most powerful' - mặc định nếu không cần tối ưu usage; GPT-6.1 Sol (chi phí hợp lý cho dự án phức tạp) và Terra (viết ngắn từ nguồn có sẵn, computer-use có tiêu chí rõ). Effort ảnh hưởng usage: ví dụ 'Luna · Low' cho chỉnh nhỏ; 'Luna · Extra high' cho tìm ngữ cảnh nhiều app / xếp việc.",
+        note: "Nguyên tắc từ docs 'Model selection': suy luận cao chỉ cần thiết cho tác vụ mở (phân tích, plan/spec, brainstorming, đánh giá thiết kế) - docs nói 'default to Astra' khi không cần tối ưu usage; task thực thi đã có spec rõ (sửa nhỏ, test, format) chạy tốt trên model hiệu quả hơn - docs hướng tới model 'most efficient' khi cần optimize usage và 'GPT-6.1 Sol' khi 'cost matters'. 'Pricing' nhấn mạnh: model choice, context, reasoning đều ảnh hưởng usage - chọn model/effort theo giai đoạn công việc thay vì để max effort mặc định.",
         refs: [
           { label: "Model selection - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/model-selection" },
-          { label: "Pricing - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/pricing" }
+          { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
         ]
       },
       {
@@ -818,7 +819,7 @@ window.QUIZ_DATA = {
       explain: "解説: ",
       refsLabel: "参考資料 (リンクは2026-11-12に検証済み):",
       retake: "最初からやり直す",
-      backTop: "⬆ 上へ戻る",
+      backTop: "⬆ 上へ戻る - 解説を見る",
       reviewHint: "下にスクロールすると各問の判定・正解・解説・参考リンクを確認できます。",
       confirmUnansweredFmt: "未回答が{0}問あります (問題: {1})。\n\n「OK」で提出 (未回答は不正解扱い)、「キャンセル」で戻ります。",
       multiBadge: "複数選択可",
@@ -831,18 +832,18 @@ window.QUIZ_DATA = {
         cat: "ポリシー・アカウント",
         diff: "easy",
         multi: false,
-        q: "ChatGPT Business ワークスペース (年払い、最低2ユーザー) について公式ドキュメントの記述として正しいのは?",
+        q: "プロジェクトのコードやデータを扱う時、メンバーはどの環境で ChatGPT/Codex を使うべき?",
         options: [
-          "Business データはデフォルトでモデル学習に使われる",
-          "デフォルトで Business データを学習に使わず、admin コンソール・SAML SSO/MFA付き",
-          "個人専用で管理者機能がない",
-          "Codex 利用には別途 credits 購入が必須"
+          "チームの ChatGPT Business ワークスペース: 専用ワークスペースで管理コンソールと SAML SSO/MFA 付き、デフォルトで Business データを学習に使わない",
+          "個人アカウント - すべてのワークスペースのセキュリティは同じ",
+          "個人アカウントの匿名モード - 管理は不要",
+          "料金がかからなければどのワークスペースでもよい"
         ],
-        correct: [1],
-        note: "Pricing ページとヘルプセンター 'Using Codex with your ChatGPT plan' より: Business は $20/人/月 (年払い、月払いなら $25、最低2ユーザー) で、専用ワークスペース、SAML SSO/MFA、デフォルトで Business データの学習不使用。チームの業務にはこのワークスペースを使う。",
+        correct: [0],
+        note: "Pricing ページとヘルプ 'Using Codex with your ChatGPT plan' より: 業務はチームの ChatGPT Business ワークスペースで行う - 管理コンソール・SAML SSO/MFA 付き、デフォルトで Business データを学習に使いません。プロジェクトの仕事を個人アカウントと混ぜない。機微データの扱いはセキュリティ関連の設問を参照。",
         refs: [
           { label: "Pricing - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/pricing" },
-          { label: "Help: Using Codex with your ChatGPT plan", url: "https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan" }
+          { label: "Help: Data controls in ChatGPT", url: "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt" }
         ]
       },
       {
@@ -1035,21 +1036,22 @@ window.QUIZ_DATA = {
         ]
       },
       {
-        cat: "AGENTS.mdと設定",
-        diff: "easy",
+        cat: "Codexとワークフロー",
+        diff: "medium",
         multi: false,
-        q: "チームの必須ルール (必ず適用すべきもの) はどこに置くべき?",
+        q: "チームで Codex に skills (定型的なプロセスのパッケージ化) を正しく導入する方法は?",
         options: [
-          "アシスタントの個人メモリに保存しておく",
-          "チャットごとにその場で決める",
-          "リポジトリにコミットされた AGENTS.md / ドキュメント",
-          "リポジトリ外の個人メモファイル"
+          "skills.sh (AI エージェント向けスキルのディレクトリ、著名な GitHub リポジトリから集約) を参考にし、SKILL.md の中身をコードレビューのように確認してからリポジトリの .agents/skills に入れて共有。AI エージェント関連のニュースもフォローして新スキルを追跡",
+          "ネットで見つけたスキルは何でもインストール - スキルは常に安全",
+          "スキルがあれば AGENTS.md や公式ドキュメントは不要",
+          "スキルは OpenAI のチームしか作れない"
         ],
-        correct: [2],
-        note: "公式 'Memories': 必須ルールは AGENTS.md またはコミット済みドキュメントに置く。メモリは 'recall 層' にすぎず (ローカルの Codex memories はデフォルトでオフ)、コンプライアンスのための信頼できるルール源ではない。",
+        correct: [0],
+        note: "公式 'Customization overview' とガイド 'Best practices' より: スキルは SKILL.md (手順 + メタデータ) を含むフォルダ。個人用は $HOME/.agents/skills、チーム共有はリポジトリの .agents/skills にコミット。$skill-creator で足場を作れる。skills.sh は 'The Agent Skills Directory' (2026-11-12 に HTTP 200 確認) で、複数の GitHub リポジトリからスキルを発見できる。外部ソースのスキルは導入前に権限・データソースを PR 同様にレビューし、AI エージェント関連ニュースもフォローして最新化する。",
         refs: [
-          { label: "Memories - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/customization/memories" },
-          { label: "AGENTS.md - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-configuration/agents-md" }
+          { label: "skills.sh - The Agent Skills Directory", url: "https://skills.sh" },
+          { label: "Customization overview - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/customization/overview" },
+          { label: "Best practices guide - ChatGPT Learn", url: "https://learn.chatgpt.com/guides/best-practices" }
         ]
       },
       {
@@ -1444,18 +1446,18 @@ window.QUIZ_DATA = {
         cat: "Codexとワークフロー",
         diff: "medium",
         multi: false,
-        q: "ChatGPT プランで支払う場合の model と effort の選び方として正しいのは?",
+        q: "チームでの品質とコストのバランスのための model 選択戦略は?",
         options: [
-          "Luna は最速で軽い - 小修正やデータ抽出向き。Astra は最強 - 用途最適化不要ならデフォルト。Sol/Terra はバランス型。effort が高いほど使用量を余分に消費",
-          "GPT-6.1 Sol/Terra なら全タスクで無料",
-          "モデルは admin ダッシュボードのみで変更、CLI では不可",
-          "effort は使用量に影響しない"
+          "『考える』仕事 (分析・plan/spec 作成・ドキュメント作成・ブレインストーミング・複雑なレビュー) は推論が強いモデル、『実行する』仕事 (明確な spec に沿った実装・小さなリファクタ・反復テスト) は速く安いモデル",
+          "単純な反復作業を含め、すべてのタスクで最強のモデルを使う",
+          "常に最安のモデルを使う - 品質はプロンプトだけで決まる",
+          "モデルは usage/コストに影響しない"
         ],
         correct: [0],
-        note: "公式 'Model selection': Luna は 'most efficient'、Astra は 'state-of-the-art, most powerful' (使用量を気にしないならデフォルト)。GPT-6.1 Sol はコスト重視の複雑プロジェクト、Terra は資料ベースの短文や computer-use。effort は使用量に影響: 'Luna · Low' は小修正、'Luna · Extra high' は複数アプリ横断の文脈検索や優先順位付け。",
+        note: "公式 'Model selection' の原則: 推論の強さが必要なのは開いたタスク (分析・plan/spec・ブレインストーミング・設計評価)。usage を気にしないなら 'default to Astra'。spec が明確な実装・テスト・整形は効率的なモデルで十分 - docs は usage を最適化するなら 'most efficient' モデル、'cost matters' なら 'GPT-6.1 Sol' を案内。『Pricing』より model 選択・context・reasoning はすべて usage に影響 - 常に最高 effort にせず、仕事の段階で model/effort を選ぶ。",
         refs: [
           { label: "Model selection - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/model-selection" },
-          { label: "Pricing - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/pricing" }
+          { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
         ]
       },
       {

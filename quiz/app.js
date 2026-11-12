@@ -70,7 +70,6 @@
     topbar.querySelector(".sub").innerHTML = ui.sub;
     topbar.querySelector(".badge.b-green").textContent = ui.legendGreen;
     topbar.querySelector(".badge.b-multi").textContent = ui.legendMulti;
-    topbar.querySelector(".badge.plain").textContent = ui.legendDiff;
     answeredCountEl.parentNode.innerHTML = ui.answered + " <strong id=\"answered-count\">0/" + questions.length + "</strong>";
     answeredCountEl = document.getElementById("answered-count");
     document.getElementById("btn-submit").textContent = ui.submit;
@@ -81,12 +80,6 @@
     footerP.textContent = ui.footer;
   }
 
-  function diffTag(diff) {
-    var ui = DATA[lang].ui;
-    var cls = diff === "hard" ? " t-kho" : diff === "medium" ? " t-tb" : " t-de";
-    return '<span class="tag' + cls + '">' + esc(ui.diffs[diff]) + "</span>";
-  }
-
   function renderQuestions() {
     var ui = DATA[lang].ui;
     questions = DATA[lang].questions;
@@ -94,7 +87,6 @@
     questions.forEach(function (item, i) {
       var tags =
         '<span class="tag">' + esc(item.cat) + "</span>" +
-        diffTag(item.diff) +
         (item.multi ? '<span class="tag t-multi">' + esc(ui.multiBadge) + "</span>" : "");
       var opts = item.options
         .map(function (opt, j) {
@@ -296,11 +288,12 @@
 
   var backTop = document.createElement("button");
   backTop.id = "backtop";
+  backTop.className = "btn-primary";
   backTop.type = "button";
   backTop.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
-  document.body.appendChild(backTop);
+  document.querySelector(".result-panel .actions-row").insertBefore(backTop, btnRetake);
 
   lang = initialLang();
   renderQuestions();
