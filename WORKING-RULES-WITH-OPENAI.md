@@ -1,6 +1,6 @@
 # WORKING RULES WITH OPENAI — Quy tắc làm việc với ChatGPT / Codex cho Team IT
 
-> **Phiên bản:** 1.0 · Ngày cập nhật: 2026-11-12
+> **Phiên bản:** 1.1 · Ngày cập nhật: 2026-11-12 (v1.1: bổ sung §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược chọn model §8; sửa gloss `--ephemeral`)
 > **Đối tượng:** Toàn bộ thành viên team (developer, BA, tester, lead) sử dụng tài khoản ChatGPT Plus / Pro / Business + Codex.
 > **Điều kiện đọc:** Đọc hết file này trước khi bắt đầu dùng ChatGPT/Codex cho công việc dự án. Sau đó làm bài trắc nghiệm **quiz/QUIZ-OPENAI-RULES.html** (40 câu, thang điểm 10, có bản tiếng Nhật ở nút ngôn ngữ phía trên).
 > **Nguồn:** Tất cả quy tắc dưới đây được tổng hợp từ tài liệu chính thức của OpenAI (ChatGPT Learn docs, Help Center, platform docs), các paper uy tín đã được verify link ngày 2026-11-12. Link nguồn đầy đủ nằm ở phần **§12. Nguồn tham khảo**.
@@ -34,7 +34,7 @@ Team đang dùng **ChatGPT trả phí (Plus/Pro/Business)** — cùng một đă
 | **ChatGPT Work** (Work mode) | Nhiệm vụ nhiều bước, nhiều nguồn/tệp, sinh deliverable (báo cáo, slide, tài liệu) để review | Tiêu hao credit nhiều hơn Chat |
 | **Codex CLI** | Agent lập mã chạy trong terminal, automation, CI (`codex exec`) | Included trong plan; đăng nhập bằng ChatGPT |
 | **Codex IDE extension** | Agent ngay cạnh editor (VS Code/Cursor...), tự mang file đang mở làm context | IDE extension tiện nhất; CLI thì nhắc @-đường dẫn |
-| **Codex Cloud / web (chatgpt.com/codex)** | Giao tác vụ code chạy song song trên môi trường cloud cô lập; Code review PR GitHub/GitLab | Cloud **tắt internet mặc định** trừ khi bật |
+| **Codex Cloud / web (chatgpt.com/codex)** | Giao tác vụ code chạy song song trên môi trường cloud cô lập; Code review PR GitHub/GitLab (GitHub: **GA**; GitLab merge request: **preview**) | Cloud **tắt internet mặc định** trừ khi bật |
 
 **Ý nghĩa khi phân tích requirement / flow làm việc:**
 - Việc nào **nhỏ, một lượt** → Chat. Việc nào **nhiều bước, cần file deliverable** → ChatGPT Work. Việc nào **liên quan codebase** → Codex (CLI/IDE/Cloud).
@@ -71,7 +71,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 
 **Lệnh & thao tác dùng hằng ngày:**
 
-- `codex` — interactive; `codex exec "task"` — non-interactive (progress → `stderr`, kết quả cuối → `stdout`; thêm `--json` để parse, `-o file` để ghi kết quả cuối, `--ephemeral` cho repo tạm); `codex review` — code review; `codex mcp add` — MCP.
+- `codex` — interactive; `codex exec "task"` — non-interactive (progress → `stderr`, kết quả cuối → `stdout`; thêm `--json` để parse, `-o file` để ghi kết quả cuối, `--ephemeral` khi không muốn lưu session rollout files xuống đĩa); `codex review` — code review; `codex mcp add` — MCP.
 - Trong session: `/plan` (Plan mode cho việc đa bước), `/goal` (mục tiêu dài), `/review` (review cục bộ), `@` mention file, `/permissions` (đổi permission/sandbox nhanh), `/status` (xem quota), `/memories` (bật memory từng chat).
 - Trong lúc agent chạy: **Enter = steer** (chèn điều hướng vào lượt đang chạy), **Tab = queue** (xếp lượt sau).
 
@@ -167,7 +167,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 
 ### 4.4 Cập nhật 2025–2026 cần nắm (để không áp dụng quy tắc cũ)
 
-- **Universal Usage Policies** áp dùng chung mọi sản phẩm; bản sửa đổi mới **có hiệu lực từ 2026-11-20** (thêm: cấm dùng output OpenAI để train model cạnh tranh, yêu cầu duyệt cho các use case quốc phòng/an ninh, review với các model-access intermediary).
+- **Universal Usage Policies** áp dùng chung mọi sản phẩm; bản sửa đổi mới **có hiệu lực từ 2026-11-20** (thêm: cấm dùng output OpenAI để train model cạnh tranh, yêu cầu duyệt cho các use case quốc phòng/an ninh, review với các model-access intermediary) *(trang policy chặn client bot — 403 — đã verify bằng cách mở trực tiếp qua browser ngày 2026-11-12)*.
 - Policy pillar "Respect privacy": cấm profile/monitor/score cá nhân không được phép; "Empower people": **cấm tự động hoá quyết định high-stakes (tuyển dụng, tín dụng, y tế, pháp lý...) mà không có người review** — mọi workflow team xây trên ChatGPT đều phải có human review ở các quyết định loại này.
 - **ChatGPT Atlas browser đã bị gỡ bỏ** — dữ liệu Atlas tách khỏi ChatGPT, xoá chat ChatGPT không xoá dữ liệu Atlas; nếu team còn dùng, phải migrate + dọn dữ liệu theo hướng dẫn của admin.
 - **Custom GPTs đang bị ngừng** (chuyển sang plugins): Enterprise dừng tạo GPT mới 2026-10-26, retirement 2026-12-11; account cá nhân không tạo GPT mới. Đừng bắt đầu workflow mới dựa trên GPTs.
@@ -178,7 +178,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 - **Prompt injection**: nội dung từ bên ngoài (trang web, PR, data khách, file của agent browser) có thể chứa "chỉ thị" nhắm vào agent. Quy tắc: **không cho agent quyền cao hoặc tự động theo nội dung nguồn không tin được**; giữ sandbox/approval đúng theo §5; ưu tiên `web_search` chế độ `cached`/`indexed` thay vì `live` khi không cần thời gian thực; agent mode bật ít app nhất.
 - **OWASP GenAI Security — LLM Top 10 for 2025** là checklist chuẩn khi thiết kế công việc AI (LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure…). Team áp dụng ở mức quy trình: giới hạn dữ liệu vào, giới hạn quyền ra, kiểm định chéo kết quả.
 - **Model có thể nhầm (hallucination)**: kết quả pháp lý, tiền, link, số hiệu API, phiên bản luôn **kiểm tra bằng nguồn chính thức** — như quy tắc "không tự bịa link" của chính file này (mọi link đã được kiểm tra ngày 2026-11-12).
-- **Bảo mật vận hành:** encrypt AES-256 at-rest, TLS 1.2+ transit, SOC 2 Type 2, ISO/IEC 27001/27017/27018/27701, CSA STAR (theo Enterprise privacy) — nhưng quyền ở **provider-side của app kết nối luôn là ranh giới thực sự**: audit quyền app định kỳ.
+- **Bảo mật vận hành:** encrypt AES-256 at-rest, TLS 1.2+ transit, SOC 2 Type 2, ISO/IEC 27001/27017/27018/27701, CSA STAR (theo Enterprise privacy; trang này chặn client bot — 403 — đã verify bằng cách mở trực tiếp qua browser ngày 2026-11-12) — nhưng quyền ở **provider-side của app kết nối luôn là ranh giới thực sự**: audit quyền app định kỳ.
 
 📚 Nguồn: [Help: Data controls in ChatGPT](https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt) · [Help: Temporary chat](https://help.openai.com/en/articles/8914046-temporary-chat-in-chatgpt) · [Help: ChatGPT agent](https://help.openai.com/en/articles/11752874-chatgpt-agent) · [Help: Projects in ChatGPT](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) · [Help: Admin controls for plugins & apps](https://help.openai.com/en/articles/11509118-admin-controls-security-and-compliance-for-plugins-and-apps) · [Help: Atlas retirement](https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement) · [Your data on the API](https://developers.openai.com/api/docs/guides/your-data) · [Usage Policies](https://openai.com/policies/usage-policies) · [Enterprise privacy](https://openai.com/enterprise-privacy/) · [Data residency expansion](https://openai.com/index/expanding-data-residency-access-to-business-customers-worldwide) · [Help: Chat and file retention policies](https://help.openai.com/en/articles/8983778-chat-and-file-retention-policies-in-chatgpt) · [Help: Data residency (ChatGPT)](https://help.openai.com/en/articles/9903489-data-residency-and-inference-residency-for-chatgpt) · [Help: Memory](https://help.openai.com/en/articles/8590148-memory-in-chatgpt) · [OWASP LLM Top 10](https://genai.owasp.org/llm-top-10/)
 
@@ -225,7 +225,7 @@ Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"
 
 ### 6.1 AGENTS.md là gì?
 
-**AGENTS.md** là format chuẩn (do team OpenAI chủ xướng, dùng chung cho nhiều agent) để ghi **hướng dẫn cho agent** trong repo. Codex đọc AGENTS.md **trước mỗi run**, ghép chain từ ~/.codex → root repo → thư mục con (file gần thư mục làm việc **đè** hướng dẫn ở trên), giới hạn mặc định **~32 KiB** (`project_doc_max_bytes`).
+**AGENTS.md** là format chuẩn mở (do OpenAI cùng nhiều bên khởi xướng — Amp, Jules/Google, Cursor, Factory — nay do Agentic AI Foundation under Linux Foundation quản trị) để ghi **hướng dẫn cho agent** trong repo. Codex đọc AGENTS.md **trước mỗi run**, ghép chain từ ~/.codex → root repo → thư mục con (file gần thư mục làm việc **đè** hướng dẫn ở trên), giới hạn mặc định **~32 KiB** (`project_doc_max_bytes`).
 
 Cần ghi vào AGENTS.md của dự án:
 - Cấu trúc repo, lệnh build/test/lint, quy ước code, quy tắc PR.
@@ -237,7 +237,14 @@ Cần ghi vào AGENTS.md của dự án:
 
 ### 6.2 Rules file (`agent-configuration/rules`)
 
-Rules file khai báo **lệnh nào được cho phép chạy ngoài sandbox** (theo wrapper/compound command), dùng để bớt duyệt tay những lệnh an toàn lặp lại mà không mở khoá chung chung.
+Rules file khai báo **lệnh nào được cho phép / phải hỏi / bị cấm chạy ngoài sandbox** — dùng để bớt duyệt tay những lệnh an toàn lặp lại mà không mở khoá chung chung. Tính năng ở dạng **experimental**.
+
+- Tạo file `.rules` trong thư mục `rules/` thuộc một config layer đang hoạt động, ví dụ `~/.codex/rules/default.rules`; project-local `<repo>/.codex/rules/` chỉ được load khi project layer đã được **trusted**.
+- Cú pháp: `prefix_rule(pattern = ["gh", "pr", "view"], decision = "prompt" | "allow" | "forbidden", justification = "...")` — `pattern` khớp tiền tố lệnh.
+- Khi nhiều rule cùng khớp một lệnh, Codex áp **quyết định chặt nhất: `forbidden` > `prompt` > `allow`**.
+- `match` / `not_match` là "unit test inline": lệnh ví dụ được kiểm khi load rule, giúp tránh viết rule sai.
+- Lệnh compound (`bash -lc "a && b"`) được tách bằng tree-sitter nếu script là chuỗi tĩnh an toàn (chỉ từ thuần + toán tử `&&`/`||`/`;`/`|`). Nếu script dùng biến, redirection, substitution, wildcard... Codex **không tách** — cả invocation được coi như MỘT lệnh (`["bash","-lc","<script>"]`) và rules áp lên toàn bộ invocation đó (hành xử conservative: không tự cấp quyền cho lệnh giấu trong script động).
+- Khi bạn bấm **allow** trong TUI, Codex tự ghi `prefix_rule` vào `~/.codex/rules/default.rules` để lần sau không hỏi lại; reviewer có thể review file này như review code.
 
 ### 6.3 Cấu hình `config.toml` (user/project)
 
@@ -248,7 +255,15 @@ Rules file khai báo **lệnh nào được cho phép chạy ngoài sandbox** (t
 - **Memories**: OFF mặc định; bật khi cần. **Không thay thế AGENTS.md.**
 - Ghi nhớ: **quy tắc bắt buộc của team nằm trong AGENTS.md/docs trong repo** (commit được, review được), không nằm trong memory cá nhân.
 
-📚 Nguồn: [AGENTS.md (Codex)](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [agents.md (chuẩn mở)](https://agents.md) · [Rules](https://learn.chatgpt.com/docs/agent-configuration/rules) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) · [MCP](https://learn.chatgpt.com/docs/extend/mcp) · [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) · [openai/codex (GitHub)](https://github.com/openai/codex)
+### 6.4 Skills (đóng gói quy trình dùng lại)
+
+- Skill = thư mục chứa **SKILL.md** (metadata + hướng dẫn) cùng script/asset tùy chọn. Codex chỉ load SKILL.md khi skill được chọn (tiết kiệm context).
+- Vị trí: **personal** = `~/.agents/skills`; **dùng chung team** = commit vào `.agents/skills/` trong repo.
+- Bắt đầu nhanh với skill **`$skill-creator`** để scaffold; giữ phiên bản đầu local, sẵn sàng rồi mới share trong repo.
+- Nguồn tham khảo/khám phá: **skills.sh** ("The Agent Skills Directory" — thu thập skill từ các GitHub repos nổi bật); cũng theo dõi release notes/docs AI agent để nắm skill mới.
+- Với skill từ nguồn bên ngoài: **review như review một PR** — đọc hết SKILL.md, kiểm lệnh chạy và nguồn dữ liệu nó dùng, trước khi cài cho cả team.
+
+📚 Nguồn: [AGENTS.md (Codex)](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [agents.md (chuẩn mở)](https://agents.md) · [Rules](https://learn.chatgpt.com/docs/agent-configuration/rules) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) · [MCP](https://learn.chatgpt.com/docs/extend/mcp) · [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) · [Customization overview (skills)](https://learn.chatgpt.com/docs/customization/overview) · [skills.sh](https://skills.sh) · [openai/codex (GitHub)](https://github.com/openai/codex)
 
 ---
 
@@ -281,17 +296,18 @@ Tài liệu chính thức "Building an AI-Native Engineering Team" chia SDLC th�
 
 ## 8. Quản lý chi phí và giới hạn sử dụng
 
-- **Included trong plan:** Plus $20/tháng; Pro từ $100 (các tier $100/$200/$500); Business $20/user/tháng (kỳ thanh toán năm; $25 nếu tính tháng, tối thiểu 2 users). Codex được dùng trong các plan này; Cloud task tiêu hao credit cao hơn chat local.
+- **Included trong plan:** Plus $20/tháng; Pro từ $100 (các tier $100/$200/$500); Business $20/user/tháng (kỳ thanh toán năm; $25 nếu tính tháng, tối thiểu 2 users). Codex được dùng trong các plan này. Cloud task **có thể** tiêu hao allowance nhiều hơn chat local (tùy model và task) — local và cloud **dùng chung quota** của plan.
 - **Giới hạn theo cửa sổ 5 giờ** (đối với việc local; Pro hiện không có cap 5 giờ; có thể có weekly limits). Việc dùng chung giữa Codex / ChatGPT Work / ChatGPT for Excel... **chia sẻ cùng quota agentic**.
 - Ước lượng tin nhắn trên cửa sổ 5 giờ (Plus, Standard Business): GPT-6 Luna nhiều nhất (~350–3.000), GPT-6.1 Terra ~35–285, GPT-6.1 Sol ~15–160, GPT-6 Astra ~5–45 — mức khác nhau theo từng model và độ phức tạp: **độ dài prompt, context, reasoning, tool use, retrieval, caching** đều ảnh hưởng; "prompt ngắn" không phải luôn rẻ.
 - **Credits:** khi vượt hạn mức, Buy credits để tiếp tục (Plus/Pro/workspace Business). Giá theo token/1M tùy model & tốc độ (Fast/Ultrafast có multiplier x2–x8).
 - **Theo dõi sử dụng:** `chatgpt.com/codex/settings/usage` hoặc `/status` trong Codex CLI.
 - **Gợi ý tiết kiệm:**
+  - Chiến lược chọn model theo giai đoạn: model suy luận mạnh (effort cao) cho việc "nghĩ" — phân tích, lập plan/spec, viết docs, brainstorming, review phức tạp; model nhẹ/nhanh + effort thấp cho việc "làm" đã có spec rõ (refactor nhỏ, test lặp lại, format). Model choice, context, reasoning đều ảnh hưởng usage.
   - Chọn model vừa đủ (model-selection guide); task nhỏ → model nhẹ/effort thấp (Low); chỉ Medium/High/Extra High cho việc phức tạp.
   - Không nhồi prompt file khổng lồ khi chỉ cần vài phần (đính kèm phần liên quan).
   - Mặc định dùng `cached`/`indexed` web search mode; chỉ `live` khi cần mới nhất.
-  - Việc lặp lại định kỳ → gói scheduled automation thay vì chạy tay nhiều lần.
-  - Cẩn thận với việc **mở `danger-full-access` + `live` mode** — vừa đắt vừa rủi ro.
+  - Việc lặp lại định kỳ đã ổn định → gói scheduled automation để **tiết kiệm thời gian/ổn định quy trình** (lưu ý: mỗi lần chạy automation vẫn **tính usage như chạy thủ công** — không giảm quota).
+  - Cẩn thận với việc **mở `danger-full-access`**: web search sẽ **tự chuyển sang `live` mặc định** → rủi ro prompt injection cao hơn `cached` (docs nói cached "giảm — nhưng không loại bỏ" rủi ro; không có định giá riêng cho live).
 
 📚 Nguồn: [Pricing (ChatGPT Learn)](https://learn.chatgpt.com/docs/pricing) · [Help: using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Feature maturity](https://learn.chatgpt.com/docs/feature-maturity)
 
@@ -382,7 +398,7 @@ https://academy.openai.com                      -> khóa học chính thức
 - Foundations: [Use ChatGPT](https://learn.chatgpt.com/docs/use-chatgpt) · [Prompting](https://learn.chatgpt.com/docs/prompting) · [Working with agents](https://learn.chatgpt.com/docs/working-with-agents) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Personalize](https://learn.chatgpt.com/docs/personalize)
 - Bảo mật/vận hành: [Sandbox](https://learn.chatgpt.com/docs/sandboxing) · [Permissions](https://learn.chatgpt.com/docs/permissions) · [Permission modes](https://learn.chatgpt.com/docs/permission-modes) · [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) · [Rules](https://learn.chatgpt.com/docs/agent-configuration/rules) · [Security administration](https://learn.chatgpt.com/docs/security-administration)
 - Đội nhóm & flow: [Best practices](https://learn.chatgpt.com/guides/best-practices) · [AI-Native Engineering Team](https://learn.chatgpt.com/guides/build-ai-native-engineering-team) · [Get started with ChatGPT Work](https://learn.chatgpt.com/docs/get-started-with-work) · [Projects](https://learn.chatgpt.com/docs/projects) · [Long-running work](https://learn.chatgpt.com/docs/long-running-work)
-- Cấu hình/dev: [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) · [Authentication](https://learn.chatgpt.com/docs/auth) · [Non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) · [MCP](https://learn.chatgpt.com/docs/extend/mcp) · [Glossary](https://learn.chatgpt.com/docs/glossary)
+- Cấu hình/dev: [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) · [Authentication](https://learn.chatgpt.com/docs/auth) · [Non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) · [MCP](https://learn.chatgpt.com/docs/extend/mcp) · [Customization overview (skills)](https://learn.chatgpt.com/docs/customization/overview) · [Glossary](https://learn.chatgpt.com/docs/glossary)
 - Cập nhật: [What's new](https://learn.chatgpt.com/docs/whats-new) · [Changelog](https://learn.chatgpt.com/docs/changelog) · [Feature maturity](https://learn.chatgpt.com/docs/feature-maturity)
 
 **Help Center / chính sách (mỗi link bên dưới đã được agent mở và đọc trực tiếp ngày 2026-11-12; openai.com & help.openai.com chặn client bot — 403 — nên nếu tự check chỉ thấy 403 là bình thường):**
@@ -407,7 +423,7 @@ https://academy.openai.com                      -> khóa học chính thức
 - [Prompt engineering](https://platform.openai.com/docs/guides/prompt-engineering) · [Safety best practices](https://platform.openai.com/docs/guides/safety-best-practices) · [Prompt caching](https://platform.openai.com/docs/guides/prompt-caching) · [Production best practices](https://platform.openai.com/docs/guides/production-best-practices) · [Models](https://platform.openai.com/docs/models) · [API Reference](https://platform.openai.com/docs/api-reference)
 
 **Khác:**
-- [openai/codex (GitHub)](https://github.com/openai/codex) · [agents.md](https://agents.md) · [OpenAI Academy](https://academy.openai.com) · [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
+- [openai/codex (GitHub)](https://github.com/openai/codex) · [agents.md](https://agents.md) · [skills.sh — The Agent Skills Directory](https://skills.sh) · [OpenAI Academy](https://academy.openai.com) · [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
 - Bảo mật AI: [OWASP GenAI — LLM Top 10 for 2025](https://genai.owasp.org/llm-top-10/)
 
 **Paper khoa học (arXiv/ACM):**
