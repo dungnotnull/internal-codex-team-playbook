@@ -79,7 +79,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 
 - `sandbox_mode`: `read-only | workspace-write | danger-full-access`.
 - `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`; `approvals_reviewer = "auto_review"` để subagent reviewer duyệt approval prompt thay bạn.
-- `[sandbox_workspace_write] network_access = true` + `features.network_proxy` + allowlist/deniedlist domain (denied list luôn thắng).
+- `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + allowlist/deniedlist domain (denied list luôn thắng). Proxy chỉ filter lệnh chạy trong sandbox local — web search/MCP/connector/cloud không đi qua (chi tiết §5.3).
 - `project_doc_max_bytes`: mặc định **32 KiB** cho AGENTS.md chain.
 - Web search cho chat local: **cached mode là mặc định** (dùng index do OpenAI giữ, hoạt động cả khi tắt network của lệnh); cần tin mới nhất mới `live` (`--search` cho 1 run; cấu hình `allowed_web_search_modes`).
 - Local Codex memories **mặc định tắt** — bật qua Settings → Personalization → "Enable Codex memories" hoặc `/memories` từng chat.
