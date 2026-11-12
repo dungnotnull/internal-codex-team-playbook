@@ -1,0 +1,30 @@
+OK 200 https://learn.chatgpt.com/docs/pricing
+403 https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan [403 - pane-verified, known client block]
+403 https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt [403 - pane-verified, known client block]
+403 https://help.openai.com/en/articles/8983778-chat-and-file-retention-policies-in-chatgpt [403 - pane-verified, known client block]
+OK 200 https://learn.chatgpt.com/docs/prompting
+OK 200 https://arxiv.org/abs/2406.06608
+OK 200 https://learn.chatgpt.com/docs/agent-approvals-security
+OK 200 https://learn.chatgpt.com/docs/config-file/config-reference
+OK 200 https://learn.chatgpt.com/docs/sandboxing
+OK 200 https://learn.chatgpt.com/docs/web-search
+OK 200 https://learn.chatgpt.com/docs/working-with-agents
+OK 200 https://learn.chatgpt.com/docs/permission-modes
+OK 200 https://learn.chatgpt.com/docs/agent-configuration/agents-md
+OK 200 https://agents.md
+OK 200 https://learn.chatgpt.com/docs/customization/memories
+OK 200 https://learn.chatgpt.com/guides/best-practices
+OK 200 https://learn.chatgpt.com/docs/code-review
+OK 200 https://learn.chatgpt.com/docs/automations
+OK 200 https://learn.chatgpt.com/docs/non-interactive-mode
+OK 200 https://genai.owasp.org/llm-top-10/
+OK 200 https://arxiv.org/abs/2210.03629
+OK 200 https://arxiv.org/abs/2509.04664
+OK 200 https://learn.chatgpt.com/docs/third-party/github
+OK 200 https://learn.chatgpt.com/docs/auth
+OK 200 https://learn.chatgpt.com/docs/extend/mcp
+OK 200 https://learn.chatgpt.com/docs/cloud
+OK 200 https://learn.chatgpt.com/docs/environments/git-worktrees
+OK 200 https://learn.chatgpt.com/docs/agent-configuration/rules
+OK 200 https://learn.chatgpt.com/docs/model-selection
+OK 200 https://learn.chatgpt.com/docs/long-running-work

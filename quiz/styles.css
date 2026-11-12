@@ -273,3 +273,8 @@ body.graded .submit-bar { display: none; }
 }
 #backtop:hover { filter: brightness(1.08); }
 body.graded #backtop { display: inline-flex; align-items: center; }
+
+/* Header brand row (official wordmark + kicker) */
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand .logo { height: 26px; width: auto; display: block; filter: brightness(0) invert(1); opacity: 0.95; }
+.brand .kicker { margin: 0; }
