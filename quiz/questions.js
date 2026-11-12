@@ -519,6 +519,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "MCP server khai báo table [mcp_servers.<tên>] (stdio cần 'command', remote cần 'url'); CLI có codex mcp add. Với codex exec: nếu MCP server required = true mà khởi động lỗi thì codex exec thoát với error thay vì bỏ qua - tránh chạy task thiếu công cụ bắt buộc.",
+        img: "mcpshot",
+        imgNote: "Poster chính thức 'How an MCP request works' - nguồn: learn.chatgpt.com/docs/extend/mcp.",
         refs: [
           { label: "Extend with MCP - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/extend/mcp" },
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" }
@@ -644,6 +646,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "Docs 'Code Review' + 'Non-interactive mode': codex review là lệnh built-in (CODEX_API_KEY dùng được cho codex review); review PR bằng chat không tự post comment/không approve/merge - dùng @codex review trên GitHub để có comment; tuỳ biến nguyên tắc bằng section '## Code Review Rules' trong AGENTS.md.",
+        img: "ideshot",
+        imgNote: "Illustration official về review trong IDE - nguồn: learn.chatgpt.com/docs/codex/ide.",
         refs: [
           { label: "Code Review - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/code-review" },
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" }
@@ -1300,6 +1304,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "MCP サーバーは [mcp_servers.<名前>] テーブル (stdio は 'command'、リモートは 'url' が必須)。CLI は codex mcp add。codex exec では required = true の MCP サーバーの起動に失敗すると、スキップせずエラーで終了する。",
+        img: "mcpshot",
+        imgNote: "公式ポスター 'How an MCP request works' - 出典: learn.chatgpt.com/docs/extend/mcp。",
         refs: [
           { label: "Extend with MCP - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/extend/mcp" },
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" }
@@ -1425,6 +1431,8 @@ window.QUIZ_DATA = {
         ],
         correct: [0],
         note: "公式 'Code Review' + 'Non-interactive mode': codex review は内蔵コマンド (CODEX_API_KEY 使用可)。チャット上での PR レビューはコメント投稿/承認/マージをしない - GitHub 上の @codex review コメントで発動。基準は AGENTS.md の '## Code Review Rules' セクションでカスタマイズ。",
+        img: "ideshot",
+        imgNote: "公式ドキュメントのレビュー Illustration - 出典: learn.chatgpt.com/docs/codex/ide。",
         refs: [
           { label: "Code Review - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/code-review" },
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" }

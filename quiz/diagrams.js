@@ -140,5 +140,10 @@ window.QUIZ_DIAGRAMS = {
     '<rect x="20" y="176" width="270" height="36" rx="10" fill="#e8f5ee" stroke="#1a7f4b"/><text x="155" y="199" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#1a7f4b">tight sandbox + approval on-request</text>' +
     '<rect x="310" y="176" width="270" height="36" rx="10" fill="#e8f5ee" stroke="#1a7f4b"/><text x="445" y="199" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#1a7f4b">prefer cached / indexed search</text>' +
     '<rect x="600" y="176" width="260" height="36" rx="10" fill="#e8f5ee" stroke="#1a7f4b"/><text x="730" y="199" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#1a7f4b">no uncontrolled publish rights</text>' +
-    '</svg>'
+    '</svg>',
+
+  "mcpshot": '<img class="shot" src="img/mcp-request-poster.webp" alt="How an MCP request works - official poster" onerror="this.style.display=\'none\'">',
+
+  "ideshot": '<img class="shot" src="img/ide-review.webp" alt="Codex review in the IDE - official illustration" onerror="this.style.display=\'none\'">'
+
 };
