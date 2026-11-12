@@ -1,6 +1,7 @@
 # WORKING RULES WITH OPENAI - IT Team Rules for ChatGPT / Codex
 
-> **Version:** 1.2 · Updated: 2026-11-12 (v1.2: English canonical edition, dash normalization; v1.1: detailed rules-file section added, skills.sh section added, model strategy in §8; `--ephemeral` gloss fixed)
+> **Version:** 1.2.1 · Updated: 2026-11-12 (v1.2.1: protected-paths paragraph added to §5.2 + separate Vietnamese edition; v1.2: English canonical edition, dash normalization; v1.1: detailed rules-file section added, skills.sh section added, model strategy in §8; `--ephemeral` gloss fixed)
+> **Vietnamese edition:** [`WORKING-RULES-WITH-OPENAI-VI.md`](WORKING-RULES-WITH-OPENAI-VI.md) - kept 1:1 in sync with this file.
 > **Audience:** Every team member (developer, BA, tester, lead) using a ChatGPT Plus / Pro / Business account + Codex.
 > **Before you start:** Read this entire file before using ChatGPT/Codex for project work. Then take the quiz **quiz/QUIZ-OPENAI-RULES.html** (40 questions, 10-point scale, Japanese version available via the language switch at the top).
 > **Sources:** Everything below is compiled from official OpenAI documentation (ChatGPT Learn docs, Help Center, platform docs) and reputable papers, with all links verified on 2026-11-12. The full source list is in **§12. References**.
