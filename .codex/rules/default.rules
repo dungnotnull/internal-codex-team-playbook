@@ -1,0 +1,73 @@
+# =====================================================================
+# Codex command posture - aligned with parent-company guide
+# (Codex app safe usage guide - Codex-app-safe-usage-guide-2.pdf)
+# Install per project: copy this file to <repo>/.codex/rules/default.rules
+# and trust the project layer (docs: agent-configuration rules).
+# Semantics (official docs): "forbidden" = block the request without
+# prompting; "prompt" = prompt before each matching invocation. Most
+# restrictive decision wins when multiple rules match.
+# =====================================================================
+
+# --- Irreversible deletion: FORBIDDEN (parent guide: deny rm / rm -rf) ---
+prefix_rule(
+  pattern = ["rm"],
+  decision = "forbidden",
+  justification = "Parent guide: rm / rm -rf denied - deletion is irreversible",
+  match = ["rm -rf ~/"],
+  not_match = ["rmdir empty-dir"]
+)
+
+# --- External network / transfer: FORBIDDEN (deny and report) ---
+prefix_rule(
+  pattern = ["curl"],
+  decision = "forbidden",
+  justification = "Parent guide: outbound commands denied - report instead"
+)
+prefix_rule(pattern = ["wget"], decision = "forbidden", justification = "Parent guide: outbound denied")
+prefix_rule(pattern = ["scp"], decision = "forbidden", justification = "Parent guide: outbound denied")
+prefix_rule(pattern = ["ssh"], decision = "forbidden", justification = "Parent guide: remote connections denied")
+prefix_rule(
+  pattern = ["git", "push"],
+  decision = "forbidden",
+  justification = "Parent guide: pushing is publish - agent must not push; PR flow via the approved platform path only",
+  match = ["git push origin main"],
+  not_match = ["git push --dry-run"] # note: still forbidden; example kept to show union/positional matching
+)
+
+# --- State-changing inside workspace: PROMPT with candidate list first ---
+prefix_rule(
+  pattern = ["mv"],
+  decision = "prompt",
+  justification = "Parent guide: review source/target before moving",
+  match = ["mv a.txt /tmp/b.txt"]
+)
+prefix_rule(
+  pattern = ["cp"],
+  decision = "prompt",
+  justification = "Parent guide: review source/target before copying"
+)
+prefix_rule(
+  pattern = ["sed"],
+  decision = "prompt",
+  justification = "Parent guide: in-place edits reviewed via diff first"
+)
+
+# --- Credentials / permission loosening: FORBIDDEN (deny and report) ---
+prefix_rule(
+  pattern = ["cat", ".env"],
+  decision = "forbidden",
+  justification = "Parent guide: credential read-out denied",
+  match = ["cat .env"]
+)
+prefix_rule(pattern = ["env"], decision = "forbidden", justification = "Parent guide: environment dump may leak secrets")
+prefix_rule(pattern = ["sudo"], decision = "forbidden", justification = "Parent guide: privilege escalation denied")
+prefix_rule(pattern = ["chmod", "777"], decision = "forbidden", justification = "Parent guide: loosening permissions denied")
+prefix_rule(
+  pattern = ["chmod"],
+  decision = "prompt",
+  justification = "Other chmod forms reviewed case by case"
+)
+
+# Always-allow policy reminder (parent guide): persistent "allow" decisions are
+# only for safe READ-ONLY operations - never for sends, deletions, auth or
+# Drive-family integrations.
