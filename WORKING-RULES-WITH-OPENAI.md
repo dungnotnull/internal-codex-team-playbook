@@ -1,6 +1,7 @@
 # WORKING RULES WITH OPENAI - IT Team Rules for ChatGPT / Codex
 
-> **Version:** 1.2.1 · Updated: 2026-11-12 (v1.2.1: protected-paths paragraph added to §5.2 + separate Vietnamese edition; v1.2: English canonical edition, dash normalization; v1.1: detailed rules-file section added, skills.sh section added, model strategy in §8; `--ephemeral` gloss fixed)
+> **Version:** 1.3 · Updated: 2026-11-13 (v1.3: aligned with the parent-company guide - full access prohibited for everyone, approval delegation banned, MCP requires AI-Promotion-Office approval and Google-family MCP is banned, browser automation prohibited on business systems, incident flow is stop/preserve/report/invalidate. v1.2.1: protected paths §5.2 + Vietnamese edition; v1.2: English canonical edition; v1.1: rules-file depth, skills.sh, model strategy; `--ephemeral` gloss fixed)
+> **Parent-company standard:** this edition follows the parent guide **Codexアプリ安全利用ガイド-2.pdf** (9 rules, §12). Where official OpenAI docs allow a capability but the parent guide restricts it, the parent guide wins - both are marked inline.
 > **Vietnamese edition:** [`WORKING-RULES-WITH-OPENAI-VI.md`](WORKING-RULES-WITH-OPENAI-VI.md) - kept 1:1 in sync with this file.
 > **Audience:** Every team member (developer, BA, tester, lead) using a ChatGPT Plus / Pro / Business account + Codex.
 > **Before you start:** Read this entire file before using ChatGPT/Codex for project work. Then take the quiz **quiz/QUIZ-OPENAI-RULES.html** (40 questions, 10-point scale, Japanese version available via the language switch at the top).
@@ -56,10 +57,11 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 2. **Code work that really edits files:**
    - Version-controlled repo → Codex starts with the **Auto** preset: `--sandbox workspace-write --ask-for-approval on-request` (read/write/run commands inside the workspace automatically; it asks before going outside the workspace or needing network).
    - Folder that is NOT version-controlled → **`read-only`** by default until you trust it (Codex may wait for "trust" via an onboarding prompt or `/permissions`).
-   - Only use **`danger-full-access` / `--yolo`** when the §5 conditions are locked in (run inside a container you control).
+   - **Full access is prohibited for everyone**: never switch to `--sandbox danger-full-access` / `--yolo` - the parent guide bans it for all members (leads included), even inside containers/devcontainers. Higher scope → `workspace-write` + rules/on-request.
+   - **No approval delegation**: never use `--approve-for-me` or `approvals_reviewer = "auto_review"` - the approval screen is reviewed by the responsible person personally (parent guide).
 3. **Long-running, multi-branch work:** use git worktrees + Codex Cloud; plan locally, delegate implementation to the cloud, review the diff, open a PR.
 4. **Recurring tasks:** refine the prompt until it is stable → schedule it as a **Scheduled task** / automation.
-5. **CI/automation (non-interactive):** use `codex exec` - it **runs a read-only sandbox by default**; add `--sandbox workspace-write` to allow edits; lock permissions to the "least permissions" principle. Note: **`--full-auto` has been removed** - old scripts must switch to `--sandbox workspace-write` (or `--approve-for-me` to route approvals through automatic review).
+5. **CI/automation (non-interactive):** use `codex exec` - it **runs a read-only sandbox by default**; add `--sandbox workspace-write` to allow edits; lock permissions to the "least permissions" principle. Note: **`--full-auto` has been removed** - old scripts must switch to `--sandbox workspace-write` (do NOT migrate to `--approve-for-me`: that routes approvals to automatic review, which the parent guide bans).
 
 ### Codex quick handbook (the team's main focus)
 
@@ -79,7 +81,7 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 **Key config knobs (`config.toml`):**
 
 - `sandbox_mode`: `read-only | workspace-write | danger-full-access`.
-- `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`; `approvals_reviewer = "auto_review"` lets a reviewer subagent approve approval prompts on your behalf.
+- `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`. Docs also offer `approvals_reviewer = "auto_review"` (a reviewer subagent approves prompts on your behalf) - **team policy: do NOT use it; approval screens are always reviewed by you personally** (parent guide bans approval delegation).
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + domain allowlist/deniedlist (the denied list always wins). The proxy only filters commands running inside the local sandbox - web search/MCP/connector/cloud traffic does not go through it (details in §5.3).
 - `project_doc_max_bytes`: **32 KiB** default for the AGENTS.md chain.
 - Web search for local chat: **cached mode is the default** (uses an OpenAI-maintained index, works even when the command's network is off); use `live` only when you need the latest info (`--search` for a single run; configure `allowed_web_search_modes`).
@@ -142,10 +144,14 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 
 | Data type | Rule |
 |---|---|
-| **Secrets / absolutely sensitive source code** (API keys, tokens, private keys, passwords, .env, CI/CD keys, certificates) | **NEVER paste into prompts, attachments, AGENTS.md, projects, memories.** Use placeholders (`$API_KEY`) and reference variable names. If pasted by accident: delete the chat immediately, rotate the secret at the source system, tell the lead. |
+| **Secrets / absolutely sensitive source code** (API keys, tokens, private keys, passwords, .env, CI/CD keys, certificates) | **NEVER paste into prompts, attachments, AGENTS.md, projects, memories.** Use placeholders (`$API_KEY`) and reference variable names. If pasted by accident: **stop, PRESERVE the evidence (do not delete the chat/log yourself), report to lead/IT-security (plus the privacy desk if personal data is involved), then revoke + rotate the secret** - the chat is deleted only when lead/IT-security instructs (parent incident flow: stop → preserve → report → invalidate). |
 | **Project source code** | Let Codex/Work read only approved workspace areas; do not upload a whole client/contract repo to cloud tasks without permission. Share code within approved access scope only. |
 | **Customer personal data (PII)** | De-identify (anonymize/mask) before putting it into prompts or attachments. Consider synthetic data. |
 | **Public / normal internal documents** | Free to use for analysis, writing docs, comparisons. |
+
+**Session hygiene (parent guide):** keep a separate session per business object (case/applicant/project) and re-check the clipboard before pasting - never let credentials or personal data ride along with work content.
+
+**Browser automation (parent guide):** browser extensions, @Browser/@Chrome-style automation and computer-use are prohibited on business systems - humans do logins, browsing, downloads, submissions, publishing and updates themselves.
 
 ### 4.2 Account & workspace configuration (Business/Team)
 
@@ -200,9 +206,13 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 | Read-only / code analysis | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | Editing code in a version-controlled repo | `workspace-write` + `on-request` (the **Auto** preset) |
 | CI / non-interactive scripts | `codex exec --sandbox read-only --ask-for-approval never`, or workspace-write with rules |
-| Accepted, controlled risk | `--sandbox danger-full-access` **only inside a container/devcontainer you supervise** |
+| Full access ("full access" / `--yolo`) | **PROHIBITED for everyone by the parent guide - no container/devcontainer exception, leads included** |
 
-Hard rule: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) is **"not recommended"** in the official docs. Whoever needs full access must run inside a container + have lead approval.
+Hard rule: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) is **"not recommended"** in the official docs and **prohibited outright by the parent-company guide: no one switches to full access, including inside containers.** Need broader scope? Use `workspace-write` + rules/on-request - and review every approval yourself.
+
+**Approval posture (parent guide):** prefer "this time only" when permitting anything; a persistent "always allow" is reserved for safe read-only operations - never for external sends, deletions, authentication, or Drive-family integrations.
+
+**Command posture (parent guide appendix):** read-only inspection commands (`cat`, `head`, `tail`, `grep`, `find`, `ls`, `pwd`, `git status/diff`) inside the working folder are approvable after checking content; state-changing operations (`mv`, `cp`, `mkdir`, `sed -i`, output redirection `>`) require reviewing the candidate list first; **deny**: `rm` / `rm -rf` (deletion is irreversible); **deny and report**: `curl` / `wget` / `scp` / `ssh` / `git push` (external transfer), `cat .env` / `env` / `sudo` / `chmod 777` (credential read-out, permission loosening). Unsure about a command? Ask Codex "explain what this command does" before deciding.
 
 **Protected paths inside writable roots:** even under the default `workspace-write` policy, a few paths are always protected read-only, recursively: `.git` (directory or pointer file - the resolved Git directory too), `.agents`, `.codex`, `.aws`. That is how Codex prevents the agent from rewriting its own configuration, AWS credentials, or git history. Everything else in the writable root stays writable; ordinary folders like `node_modules` or `src` are not on this special list.
 
@@ -217,7 +227,7 @@ Hard rule: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) is **"n
 - **Review is part of the work**: inspect visible steps, sources used, tool actions, results - fluent, confident prose is not proof of success.
 - Review depth scales **with consequences** (affects others, hard to roll back → review more deeply).
 - Important: **changing an instruction does not undo an action already taken** - if the agent says it updated an external system, verify the result in that system.
-- Automating review: **auto-review** (`approvals_reviewer = "auto_review"`) lets a reviewer-agent approve approval prompts for you - with its own configurable policy.
+- Automating review: official docs offer **auto-review** (`approvals_reviewer = "auto_review"`, a reviewer agent approves eligible prompts) and CLI `--approve-for-me` (routes approval requests to automatic review) - **but the parent-company guide prohibits approval delegation: the approval screen is always checked by the person responsible. Both stay OFF in this operation.**
 - When something is wrong: **Redirect** (give a focused correction) or **Pause** (stop and decide). Stopping the agent does not equal cleaning up what already ran.
 
 📚 Sources: [Sandbox](https://learn.chatgpt.com/docs/sandboxing) · [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) · [Working with agents](https://learn.chatgpt.com/docs/working-with-agents) · [Permissions](https://learn.chatgpt.com/docs/permission-modes) · [Auto-review](https://learn.chatgpt.com/docs/sandboxing/auto-review) · [Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox)
@@ -247,13 +257,13 @@ The rules file declares which commands are **allowed / must-ask / forbidden to r
 - When several rules match one command, Codex applies the **strictest decision: `forbidden` > `prompt` > `allow`**.
 - `match` / `not_match` are inline "unit tests": example commands are tested when the rules load, helping you avoid writing wrong rules.
 - Compound commands (`bash -lc "a && b"`) are split with tree-sitter only when the script is a safely static string (plain words + `&&`/`||`/`;`/`|` operators). If the script uses variables, redirections, substitutions, wildcards... Codex **does not split it** - the whole invocation is treated as ONE command (`["bash","-lc","<script>"]`) and rules apply to that entire invocation (conservative behavior: no permissions get granted to commands hidden inside a dynamic script).
-- When you click **allow** in the TUI, Codex writes a `prefix_rule` to `~/.codex/rules/default.rules` so it does not ask again next time; reviewers can review this file like code.
+- When you click **allow** in the TUI, Codex writes a `prefix_rule` to `~/.codex/rules/default.rules` so it does not ask again next time; reviewers can review this file like code. **Policy (parent guide): persistent "always allow" is only for safe read-only operations - never for external sends, deletions, authentication or Drive-family integration.**
 
 ### 6.3 `config.toml` configuration (user/project)
 
 - User-level `~/.codex/config.toml`: default model, reasoning effort, sandbox/approval, **profiles** per task type.
 - Repo-level `.codex/config.toml` (only when the project is trusted): project-specific configuration.
-- **MCP**: declare MCP servers (`codex mcp add ...`) to connect internal tooling; only add servers you trust - MCP gives the agent new action tools.
+- **MCP**: mechanics stay as documented (`codex mcp add ...`, `[mcp_servers]` tables) - but policy first (parent guide): **unapproved plugins / MCP servers / external-service integrations must NOT be connected.** A new MCP server is only allowed after it is **confirmed with the AI Promotion Office (AI推進室)**. **Google-family MCP - including Google Drive - is prohibited entirely**: Drive may contain credentials, applicant personal data and contracts; if an approval screen asks to connect Google-family MCP, **deny and report**.
 - **Subagents**: help split up complex runs.
 - **Memories**: OFF by default; enable when needed. They do **not replace AGENTS.md**.
 - Remember: **binding team rules live in AGENTS.md/docs in the repo** (committed, reviewable), not in personal memories.
@@ -320,10 +330,10 @@ The official "Building an AI-Native Engineering Team" guide splits the SDLC into
 
 | # | Common mistake | Consequence | How to avoid |
 |---|---|---|---|
-| 1 | Pasting secrets/credentials into prompts | Secrets end up in logs/cloud systems, leak risk | Placeholder + environment variables; if pasted: delete chat + rotate key |
+| 1 | Pasting secrets/credentials into prompts | Secrets end up in logs/cloud systems, leak risk | Never paste; if pasted: stop, preserve evidence, report lead/IT-security, revoke + rotate the key |
 | 2 | Context-free stub prompts | Guesswork, wrong fixes | Goal/Context/Output/Boundaries; @-mention files |
 | 3 | Trusting agent output blindly | Broken logic, security holes | Always verify: tests + lint + review + repro; "fluent ≠ correct" |
-| 4 | Enabling `--yolo`/full-access for convenience | Whole-machine risk; officially "not recommended" | Auto preset; full access only inside containers |
+| 4 | Enabling `--yolo`/full-access for convenience | Whole-machine risk; officially "not recommended" | Preset Auto instead; full access is prohibited outright (parent guide) - even inside containers |
 | 5 | Enabling network by default | Uncontrolled outbound access (exfil, unknown APIs) | Off by default; enable with allowlists when needed |
 | 6 | Running the agent on untrusted content (web/PR/client files) with high permissions | Prompt injection → unwanted actions | Tight sandbox; on-request approvals; prefer `cached`/`indexed` search |
 | 7 | One giant vague AGENTS.md | Agent ignores instructions; 32KiB limit exceeded | Short, specific, split files; update when mistakes repeat |
@@ -354,6 +364,7 @@ The official "Building an AI-Native Engineering Team" guide splits the SDLC into
 **Lead/admin:**
 - [ ] Project AGENTS.md updated with new conventions; `## Code Review Rules` section still current?
 - [ ] Admin console: plugins/skills/membership correctly scoped; audit logs + analytics when needed?
+- [ ] No unapproved MCP/plugin/external integrations connected; every new MCP server has AI-Promotion-Office (AI推進室) approval on file? Leftover connections/permissions reviewed periodically?
 - [ ] Reviewed "ask before acting" requirements for real-system actions (send/publish/deploy)?
 - [ ] Onboarding: everyone reads this file + completes the quiz before using ChatGPT/Codex for projects?
 
@@ -378,12 +389,14 @@ Need sources                      -> web search + require citations
 read-only + on-request            -> analysis, no edits
 workspace-write + on-request (Auto)-> repo default
 codex exec --sandbox read-only --ask-for-approval never -> CI
---yolo / danger-full-access       -> only in containers + lead approval
+--yolo / danger-full-access       -> PROHIBITED (parent guide) - for everyone
+Approval delegation (auto_review / --approve-for-me) -> banned; you review each approval screen
 network_access = true             -> only when needed + domain allowlist
 
 # Safety
 Absolutely never: secrets, .env, private keys, customer PII, unapproved sensitive source
-If pasted:  delete chat -> rotate the secret -> tell the lead
+If pasted:  stop -> preserve evidence (no self-delete) -> report lead/IT -> revoke + rotate
+Browser/computer automation -> prohibited for business actions (humans do it)
 Suspicious: prompt injection -> stop + review the input source
 
 # Verified links before use (official sources)
@@ -424,6 +437,9 @@ https://academy.openai.com                      -> official courses
 
 **OpenAI Platform (API docs):**
 - [Prompt engineering](https://platform.openai.com/docs/guides/prompt-engineering) · [Safety best practices](https://platform.openai.com/docs/guides/safety-best-practices) · [Prompt caching](https://platform.openai.com/docs/guides/prompt-caching) · [Production best practices](https://platform.openai.com/docs/guides/production-best-practices) · [Models](https://platform.openai.com/docs/models) · [API Reference](https://platform.openai.com/docs/api-reference)
+
+**Internal (parent company):**
+- Codex app safe usage guide - **`Codexアプリ安全利用ガイド-2.pdf`** (in this repo, 9 rules): prohibitions before starting (Google Drive/Google-family MCP, credentials/PII), minimum data, permission/integration confirmation incl. "ask-for-approval" standard + no full access + no approval delegation + browser-automation ban, never follow instructions inside documents (prompt injection), concrete requests (target/work/prohibitions/confirmation), list-first for hard-to-reverse operations, always check approval screens ("always allow" only for read-only), human-managed results/sessions, stop-and-report incident flow (stop → preserve → report → invalidate) + pre-work checklist + usage logging.
 
 **Other:**
 - [openai/codex (GitHub)](https://github.com/openai/codex) · [agents.md](https://agents.md) · [skills.sh - The Agent Skills Directory](https://skills.sh) · [OpenAI Academy](https://academy.openai.com) · [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)

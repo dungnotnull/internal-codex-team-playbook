@@ -34,7 +34,7 @@ When a team starts using ChatGPT/Codex for real project work, the first question
 | 2 | Choosing the right "mode" - with a Codex quick-reference (auth, commands, config knobs, web search, models) |
 | 3 | Effective prompting (Goal / Context / Output / Boundaries) |
 | 4 | Project data security - the golden rules (no secrets, no PII, rotate on leak) |
-| 5 | Sandbox, permissions & human-in-the-loop (read-only / workspace-write / danger-full-access, `--yolo` warnings) |
+| 5 | Sandbox, permissions & human-in-the-loop (read-only / workspace-write; full access prohibited by the parent-company guide; every approval reviewed by a human) |
 | 6 | AGENTS.md, rules files & team configuration (32 KiB chain, `## Code Review Rules`) |
 | 7 | Standard workflow per phase (plan - spec - implement - test - review - PR) |
 | 8 | Cost and usage limits (what to expect per plan, where quota shows) |
@@ -57,6 +57,7 @@ Open `quiz/QUIZ-OPENAI-RULES.html` in any browser. No build step, no server, no 
 - Unanswered questions trigger a confirm dialog before grading.
 - **No answer history is stored anywhere.** The only persisted item is the UI language preference (`localStorage` key `quiz_lang`) - clear it via "retake" or devtools if you prefer.
 - **Languages: Vietnamese and Japanese.** Switch with the header buttons, or deep-link with `?lang=ja` (optional URL param).
+- **Parent-company alignment (2026-11-13):** the rules docs and the quiz follow the parent guide `Codexアプリ安全利用ガイド-2.pdf` - full access & approval delegation are banned outright, MCP servers need AI推進室 (AI Promotion Office) approval and Google-family MCP is banned, browser automation is off for business actions, and the incident flow is stop/preserve/report/invalidate. Where the official OpenAI docs are broader, the parent guide wins (marked inline in both rule editions and baked into the quiz answers).
 
 ### Category coverage
 

@@ -73,7 +73,7 @@ window.QUIZ_DATA = {
           "Tên hàm/module công khai trong repo"
         ],
         correct: [0, 1, 2, 3],
-        note: "ChatGPT/Codex là dịch vụ cloud: mọi thứ nhập vào, đính kèm, hoặc cho agent đọc đều được tải lên máy chủ OpenAI. Secrets (key/token/env/credential/PII) phải thay bằng placeholder (vd $API_KEY), dữ liệu khách phải mask/anonymize. Nếu lỡ dán secret: xoá hội thoại, rotate secret ở hệ thống gốc, báo lead. Lưu ý thêm: bấm phản hồi 👍/👎 có thể gửi nguyên hội thoại đi huấn luyện dù đã tắt 'Improve the model for everyone'.",
+        note: "ChatGPT/Codex là dịch vụ cloud: mọi thứ nhập vào, đính kèm, hoặc cho agent đọc đều được tải lên máy chủ OpenAI. Secrets (key/token/env/credential/PII) phải thay bằng placeholder (vd $API_KEY), dữ liệu khách phải mask/anonymize. Nếu lỡ dán secret: dừng ngay + giữ nguyên hiện trạng (không tự xoá chat/log) để bảo toàn bằng chứng, báo lead/IT ngay, revoke + rotate secret ở hệ thống gốc; tự xoá hội thoại chỉ khi lead/IT chỉ thị (guide công ty mẹ: dừng -> bảo toàn bằng chứng -> báo cáo -> vô hiệu hoá). Lưu ý thêm: bấm phản hồi 👍/👎 có thể gửi nguyên hội thoại đi huấn luyện dù đã tắt 'Improve the model for everyone'.",
         refs: [
           { label: "Help: Data controls in ChatGPT", url: "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt" },
           { label: "Help: Chat and file retention policies", url: "https://help.openai.com/en/articles/8983778-chat-and-file-retention-policies-in-chatgpt" }
@@ -129,7 +129,7 @@ window.QUIZ_DATA = {
           "untrusted"
         ],
         correct: [0, 1, 2],
-        note: "Tài liệu 'Agent approvals & security' và Config reference: sandbox_mode thuộc tập read-only | workspace-write | danger-full-access. Chú ý 'untrusted' là approval_policy đã bị gỡ khỏi Codex - không phải sandbox mode; 'network-only' không tồn tại (network là setting riêng: sandbox_workspace_write.network_access).",
+        note: "Tài liệu 'Agent approvals & security' và Config reference: sandbox_mode thuộc tập read-only | workspace-write | danger-full-access. Chú ý 'untrusted' là approval_policy đã bị gỡ khỏi Codex - không phải sandbox mode; 'network-only' không tồn tại (network là setting riêng: sandbox_workspace_write.network_access). Chính sách: danger-full-access là enum có thật trong docs nhưng team CẤM sử dụng (guide công ty mẹ - không ai được chuyển sang full access).",
         img: "sandbox",
         imgNote: "Sơ đồ: 3 mức sandbox - chặt tới mở. Mặc định khuyến nghị cho repo: workspace-write + approval on-request.",
         refs: [
@@ -180,12 +180,12 @@ window.QUIZ_DATA = {
         q: "Cờ --dangerously-bypass-approvals-and-sandbox (alias --yolo) của Codex CLI có ý nghĩa và khuyến nghị như thế nào?",
         options: [
           "Tăng tốc agent gấp đôi, được docs khuyến nghị dùng thường xuyên",
-          "Bỏ cả sandbox lẫn approval; docs ghi 'not recommended' - chỉ nên dùng trong container/devcontainer bạn giám sát",
+          "Bỏ cả sandbox lẫn approval; docs ghi 'not recommended'; guide công ty mẹ: CẤM bật full access cho mọi member (kể cả trong container)",
           "Bật network cho toàn máy một cách an toàn",
           "Tắt audit log theo chuẩn doanh nghiệp"
         ],
         correct: [1],
-        note: "Theo docs: full-access bỏ mọi giới hạn kỹ thuật và mọi cơ chế hỏi - được đánh dấu Elevated Risk / 'not recommended'; nếu cần, chạy bên trong container bạn kiểm soát (dùng --sandbox danger-full-access trong container). Bí danh --yolo mô tả đúng tinh thần 'không hỏi ai'.",
+        note: "Theo docs: full-access bỏ mọi giới hạn kỹ thuật và mọi cơ chế hỏi - Elevated Risk / 'not recommended'. Guide công ty mẹ (Codexアプリ安全利用ガイド §3): 'フルアクセスには変更しない' - chế độ này BỊ CẤM cho mọi member, kể cả trong container/devcontainer. Cần phạm vi lớn hơn -> workspace-write + rules/on-request; mỗi approval do chính bạn duyệt trên màn hình duyệt. Bí danh --yolo mô tả tinh thần 'không hỏi ai' - chính vì vậy bị cấm.",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" },
           { label: "Sandboxing - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/sandboxing" }
@@ -311,13 +311,13 @@ window.QUIZ_DATA = {
         multi: false,
         q: "Khi dùng `codex exec` cho CI/script (chạy không tương tác), câu nào mô tả ĐÚNG hành vi mặc định và cách cấu hình?",
         options: [
-          "Mặc định chạy sandbox read-only; muốn cho sửa file thêm --sandbox workspace-write; --full-auto đã bị gỡ khỏi CLI (script cũ phải đổi sang --sandbox workspace-write hoặc --approve-for-me)",
+          "Mặc định chạy sandbox read-only; muốn cho sửa file thêm --sandbox workspace-write; --full-auto đã bị gỡ khỏi CLI (script cũ phải đổi sang --sandbox workspace-write; không dùng --approve-for-me - đó là ủy quyền duyệt, guide công ty mẹ cấm)",
           "Mặc định full access cho nhanh, không cần cờ nào",
           "--full-auto là flag chuẩn hiện tại cho CI",
           "codex exec không hỗ trợ sandbox, phải set biến môi trường riêng"
         ],
         correct: [0],
-        note: "Theo docs 'Non-interactive mode': codex exec chạy progress ra stderr, kết quả cuối ra stdout (dùng --json để parse, -o <file> --output-last-message để ghi kết quả cuối, --ephemeral khi không muốn lưu session rollout files xuống disk); MẶC ĐỊNH là read-only sandbox, cho phép sửa file bằng --sandbox workspace-write, full access bằng danger-full-access; '--full-auto is no longer supported'. CI dùng CODEX_API_KEY=<api-key> codex exec --json để cấp credential tường minh.",
+        note: "Theo docs 'Non-interactive mode': codex exec chạy progress ra stderr, kết quả cuối ra stdout (dùng --json để parse, -o <file> --output-last-message để ghi kết quả cuối, --ephemeral khi không muốn lưu session rollout files xuống disk); MẶC ĐỊNH là read-only sandbox, cho phép sửa file bằng --sandbox workspace-write (danger-full-access chỉ là enum có thật trong docs; chính sách team CẤM dùng - guide công ty mẹ). '--full-auto is no longer supported'. CI dùng CODEX_API_KEY=<api-key> codex exec --json để cấp credential tường minh; CI chỉ chạy read-only và KHÔNG ủy quyền duyệt (--approve-for-me bị cấm - duyệt phải do người thật).",
         refs: [
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" },
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
@@ -329,14 +329,15 @@ window.QUIZ_DATA = {
         multi: true,
         q: "Nếu lỡ tay dán API key/token của công ty vào một chat, những bước xử lý nào ĐÚNG quy trình? (chọn nhiều)",
         options: [
-          "Xoá hội thoại chứa secret ngay",
-          "Rotate/đổi secret ở hệ thống gốc (revoke + cấp key mới)",
-          "Báo lead/IT để đánh giá phạm vi lộ",
+          "Dừng ngay và giữ nguyên hiện trạng (không tự xoá chat/log) để bảo toàn bằng chứng",
+          "Rotate/revoke secret ở hệ thống gốc (revoke + cấp key mới)",
+          "Báo lead/IT (và cổng IT bảo mật/đầu mối bảo vệ dữ liệu cá nhân nếu liên quan) để đánh giá phạm vi lộ",
+          "Xoá hội thoại ngay để xoá sạch dấu vết",
           "Chờ đến hết phiên làm việc rồi tự hiểu",
           "Đổi tên file để giấu tên key"
         ],
         correct: [0, 1, 2],
-        note: "Việc xoá hội thoại chỉ giảm rủi ro lưu giữ theo retention; secret vẫn có thể đã vào log/đã bị dùng. Chuẩn xử lý sự cố: 1) revoke + rotate key ngay, 2) xoá hội thoại, 3) báo lead để kiểm tra hoạt động bất thường. 'Chờ hết phiên' và 'đổi tên file' không vô hiệu hoá secret đã lộ.",
+        note: "Guide công ty mẹ (Codexアプリ安全利用ガイド) quy trình sự cố 4 bước: 1) Dừng - ngừng ngay thao tác/hội thoại, 2) Bảo toàn bằng chứng - KHÔNG xoá file/màn hình duyệt/nội dung thao tác, 3) Báo cáo - lead/IT security/đầu mối bảo vệ dữ liệu cá nhân tùy phạm vi, 4) Vô hiệu hoá - revoke + rotate secret. Tự xoá hội thoại phá huỷ bằng chứng audit - chỉ làm khi lead/IT chỉ thị. 'Chờ hết phiên', 'đổi tên file' và 'tự xoá để xoá sạch dấu vết' không vô hiệu hoá secret đã lỡ lộ.",
         refs: [
           { label: "Working with agents - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/working-with-agents" },
           { label: "OWASP GenAI - LLM Top 10", url: "https://genai.owasp.org/llm-top-10/" }
@@ -512,15 +513,15 @@ window.QUIZ_DATA = {
         cat: "Codex & workflow",
         diff: "medium",
         multi: false,
-        q: "Muốn ghép thêm công cụ/dịch vụ bên ngoài (MCP server) vào Codex, cách đúng theo docs là gì?",
+        q: "Muốn ghép thêm công cụ/dịch vụ bên ngoài (MCP server) vào Codex cho công việc của team, cách nào ĐÚNG?",
         options: [
           "codex mcp add <tên> ... hoặc khai báo [mcp_servers.<tên>] trong config; đặt required = true nếu workflow phụ thuộc server này",
           "Sửa mô tả model trong AGENTS.md để tự sinh MCP",
-          "Cài MCP riêng trong ChatGPT app, Codex tự nhận biết",
+          "Google Drive MCP tiện cho việc đọc tài liệu, connect luôn không cần duyệt",
           "Không thể mở rộng công cụ, Codex chỉ dùng tool mặc định"
         ],
         correct: [0],
-        note: "MCP server khai báo table [mcp_servers.<tên>] (stdio cần 'command', remote cần 'url'); CLI có codex mcp add. Với codex exec: nếu MCP server required = true mà khởi động lỗi thì codex exec thoát với error thay vì bỏ qua - tránh chạy task thiếu công cụ bắt buộc.",
+        note: "MCP server khai báo table [mcp_servers.<tên>] (stdio cần 'command', remote cần 'url'); CLI có codex mcp add. Với codex exec: nếu MCP server required = true mà khởi động lỗi thì thoát với error thay vì bỏ qua. CHÍNH SÁCH (guide công ty mẹ): chỉ nối MCP/plugin/liên kết ĐÃ ĐƯỢC DUYỆT; server mới phải xác nhận với AI推進室 (phòng Xúc tiến AI) TRƯỚC khi nối; CẤM Google Drive và Google-family MCP (Drive là nơi chứa credentials/PII/hợp đồng); nếu màn hình duyệt xin nối Google-family MCP -> TỪ CHỐI và BÁO CÁO.",
         img: "mcpshot",
         imgNote: "Poster chính thức 'How an MCP request works' - nguồn: learn.chatgpt.com/docs/extend/mcp.",
         refs: [
@@ -612,7 +613,7 @@ window.QUIZ_DATA = {
           "Chỉ là tên gợi ý, không ảnh hưởng hoạt động"
         ],
         correct: [0],
-        note: "Docs: on-request = agent tự quyết trong phạm vi sandbox, khi cần thêm quyền mới hỏi. Các giá trị khác: never (không hỏi - CI/tin cậy tuyệt đối) và granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval }; có approvals_reviewer = 'auto_review' để subagent reviewer duyệt approval prompt thay bạn.",
+        note: "Docs: on-request = agent tự quyết trong phạm vi sandbox, khi cần thêm quyền mới hỏi. Các giá trị khác: never (không hỏi - CI/tin cậy tuyệt đối) và granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval }; có approvals_reviewer = 'auto_review' để subagent reviewer duyệt approval prompt thay bạn. Chính sách team (guide công ty mẹ): cấm đại diện duyệt ('承認を代行') - KHÔNG bật approvals_reviewer='auto_review', không dùng --approve-for-me; màn hình duyệt phải do chính bạn xác nhận.",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" },
           { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }
@@ -860,7 +861,7 @@ window.QUIZ_DATA = {
           "リポジトリ内の公開関数/モジュール名"
         ],
         correct: [0, 1, 2, 3],
-        note: "ChatGPT/Codex はクラウドサービスであり、入力・添付・エージェントが読んだものはすべて OpenAI のサーバーへ送られる。シークレット (キー/トークン/.env/認証情報/PII) はプレースホルダ (例: $API_KEY) に置換し、顧客データはマスク or 匿名化する。誤って貼った場合: 会話を削除、元システムでキーをローテート、リードへ報告。なお 👍/👎 のフィードバックは 'Improve the model for everyone' をオフにしていても会話ごと学習に送られる場合がある。",
+        note: "ChatGPT/Codex はクラウドサービスであり、入力・添付・エージェントが読んだものはすべて OpenAI のサーバーへ送られる。シークレット (キー/トークン/.env/認証情報/PII) はプレースホルダ (例: $API_KEY) に置換し、顧客データはマスク or 匿名化する。誤って貼った場合: 直ちに停止し、現状を保存して (会話/ログを自己判断で消さず) リード/ITへ即報告し、元システムでキーを失効・ローテートする。会話の自己削除は証跡保全を壊すため、リード/ITの指示がある場合のみ (親会社ガイド: 停止 -> 現状保全 -> 報告 -> 無効化)。なお 👍/👎 のフィードバックは 'Improve the model for everyone' をオフにしていても会話ごと学習に送られる場合がある。",
         refs: [
           { label: "Help: Data controls in ChatGPT", url: "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt" },
           { label: "Help: Chat and file retention policies", url: "https://help.openai.com/en/articles/8983778-chat-and-file-retention-policies-in-chatgpt" }
@@ -916,7 +917,7 @@ window.QUIZ_DATA = {
           "untrusted"
         ],
         correct: [0, 1, 2],
-        note: "'Agent approvals & security' と Config reference: sandbox_mode は read-only | workspace-write | danger-full-access の3値。'untrusted' は廃止された approval_policy であってサンドボックスモードではない。'network-only' という値は存在しない (ネットワークは sandbox_workspace_write.network_access の個別設定)。",
+        note: "'Agent approvals & security' と Config reference: sandbox_mode は read-only | workspace-write | danger-full-access の3値。'untrusted' は廃止された approval_policy であってサンドボックスモードではない。'network-only' という値は存在しない (ネットワークは sandbox_workspace_write.network_access の個別設定)。ポリシー: danger-full-access は公式の enum だが、親会社ガイドにより使用禁止 (誰もフルアクセスへ変更しない)。",
         img: "sandbox",
         imgNote: "3段階のサンドボックス。リポジトリの既定推奨は workspace-write + approval on-request。",
         refs: [
@@ -967,12 +968,12 @@ window.QUIZ_DATA = {
         q: "--dangerously-bypass-approvals-and-sandbox (別名 --yolo) の意味と推奨は?",
         options: [
           "エージェントが2倍速くなるので常用が推奨される",
-          "サンドボックスと承認の両方を無効化。公式は 'not recommended' - 監視できる container/devcontainer 内でのみ使用",
+          "サンドボックスと承認の両方を無効化。公式は 'not recommended'; 親会社ガイド: フルアクセスへの変更は全員禁止 (コンテナ内でも使用不可)",
           "全マシンのネットワークを安全に有効化する",
           "企業向け監査ログを無効化する"
         ],
         correct: [1],
-        note: "公式: full-access は技術的制限と承認フローのすべてを外すため Elevated Risk/'not recommended'。必要な場合は自分で管理するコンテナ内で実行 (--sandbox danger-full-access をコンテナ内で使用)。--yolo という別名が由来を示している。",
+        note: "公式: full-access は技術的制限と承認フローのすべてを外すため Elevated Risk/'not recommended'。親会社ガイド (Codexアプリ安全利用ガイド §3): 'フルアクセスには変更しない' - 本運用では全員禁止 (コンテナ内でも不可)。権限を広げたい場合は workspace-write + rules/on-request で対応し、承認は必ず本人が承認画面で確認する。--yolo の別名が示す通り '誰にも聞かない' 動作のため禁止。",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" },
           { label: "Sandboxing - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/sandboxing" }
@@ -1098,13 +1099,13 @@ window.QUIZ_DATA = {
         multi: false,
         q: "CI/スクリプト (非対話) での `codex exec` の挙動と設定として正しいのは?",
         options: [
-          "デフォルトは read-only サンドボックス。編集を許すなら --sandbox workspace-write。--full-auto は廃止済み (スクリプトは --sandbox workspace-write または --approve-for-me へ移行)",
+          "デフォルトは read-only サンドボックス。編集を許すなら --sandbox workspace-write。--full-auto は廃止済み (スクリプトは --sandbox workspace-write へ移行; --approve-for-me は承認の自動代行なので親会社ガイドで禁止)",
           "デフォルトで full access なのでフラグ不要",
           "--full-auto が現在の CI 標準フラグ",
           "codex exec はサンドボックス非対応、環境変数で別途設定する"
         ],
         correct: [0],
-        note: "公式 'Non-interactive mode': codex exec は進行状況を stderr、最終メッセージを stdout へ (--json でパース、-o <file> --output-last-message で最終結果を保存、--ephemeral でセッション rollout ファイルをディスクに残さない)。デフォルトは read-only、編集許可は --sandbox workspace-write、公式より --full-auto は廃止。CI は CODEX_API_KEY=<api-key> codex exec --json で認証を明示。",
+        note: "公式 'Non-interactive mode': codex exec は進行状況を stderr、最終メッセージを stdout へ (--json でパース、-o <file> --output-last-message で最終結果を保存、--ephemeral でセッション rollout ファイルをディスクに残さない)。デフォルトは read-only、編集許可は --sandbox workspace-write (danger-full-access は公式の enum だがチーム方針で使用禁止 - 親会社ガイド)。公式より --full-auto は廃止。CI は CODEX_API_KEY=<api-key> codex exec --json で認証を明示; CI は read-only のみで承認の代行はしない (--approve-for-me は親会社ガイドで禁止 - 承認は本人が行う)。",
         refs: [
           { label: "Non-interactive mode - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/non-interactive-mode" },
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
@@ -1116,14 +1117,15 @@ window.QUIZ_DATA = {
         multi: true,
         q: "会社の API キー/トークンを誤ってチャットに貼ってしまった場合の正しい対応は? (複数選択)",
         options: [
-          "該当会話を直ちに削除",
+          "直ちに停止し、現状を保存 (会話/ログを勝手に消さず証跡を保全)",
           "元システムでキーをローテート (revoke + 新キー発行)",
-          "リーク範囲を評価するためリード/ITへ報告",
+          "リーク範囲を評価するためリード/ITへ報告 (案件により情報シス/個人情報窓口も)",
+          "該当会話を直ちに削除して証跡を消す",
           "セッション終了まで放置する",
           "ファイル名を変えて隠す"
         ],
         correct: [0, 1, 2],
-        note: "会話の削除は retention 上のリスクを減らすだけ。キーは既にログ/利用に流れている可能性がある。標準対応: 1) 即 revoke + rotate, 2) 会話削除, 3) リードへ報告し不審なアクティビティを確認。'放置' や 'ファイル名変更' はキーを無効化しない。",
+        note: "会話の削除は retention 上のリスクを減らすだけ。キーは既にログ/利用に流れている可能性がある。親会社ガイドのインシデント対応: 1) 停止 (直ちに操作/会話を止める), 2) 現状保全 (ファイル/承認画面/操作内容を消さず残す), 3) 報告 (リード/情報シス/個人情報保護窓口), 4) 変更 (キーの失効・変更)。会話の自己削除は証跡保全を壊すため、指示がある場合のみ実施。'放置' や 'ファイル名変更' はキーを無効化しない。",
         refs: [
           { label: "Working with agents - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/working-with-agents" },
           { label: "OWASP GenAI - LLM Top 10", url: "https://genai.owasp.org/llm-top-10/" }
@@ -1299,15 +1301,15 @@ window.QUIZ_DATA = {
         cat: "Codexとワークフロー",
         diff: "medium",
         multi: false,
-        q: "Codex に外部ツール/サービス (MCP server) を追加する正しい方法は?",
+        q: "チームの業務で Codex に MCP server を追加する正しい方法は?",
         options: [
           "codex mcp add <名前> ... または config に [mcp_servers.<名前>] を宣言。workflow が依存するなら required = true",
           "AGENTS.md でモデルの説明を変えて MCP を自動生成",
-          "ChatGPT アプリに別途インストールすれば Codex が自動認識",
+          "Google Drive MCP は資料の閲覧に便利なので承認なしで接続してよい",
           "ツール拡張は不可、デフォルトの tool のみ"
         ],
         correct: [0],
-        note: "MCP サーバーは [mcp_servers.<名前>] テーブル (stdio は 'command'、リモートは 'url' が必須)。CLI は codex mcp add。codex exec では required = true の MCP サーバーの起動に失敗すると、スキップせずエラーで終了する。",
+        note: "MCP サーバーは [mcp_servers.<名前>] テーブル (stdio は 'command'、リモートは 'url' が必須)。CLI は codex mcp add。codex exec では required = true のサーバー起動に失敗するとスキップせずエラーで終了する。ポリシー (親会社ガイド): 未承認の plugin/MCP/外部連携は接続しない。新しい MCP server が必要な場合は接続前に AI推進室へ確認する。Google Drive と Google 系 MCP の接続・同期は禁止 (Drive には認証情報・応募者情報・契約書が含まれ得る)。承認画面で Google 系 MCP への接続を求められたら拒否して報告する。",
         img: "mcpshot",
         imgNote: "公式ポスター 'How an MCP request works' - 出典: learn.chatgpt.com/docs/extend/mcp。",
         refs: [
@@ -1399,7 +1401,7 @@ window.QUIZ_DATA = {
           "単なる名称で、動作に影響しない"
         ],
         correct: [0],
-        note: "公式: on-request はサンドボックス内で自律実行し、追加権限が必要な時のみ問い合わせる。他の値は never (質問なし - CI/完全信頼) と granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval }。approvals_reviewer = 'auto_review' でレビューサブエージェントに承認を委譲も可能。",
+        note: "公式: on-request はサンドボックス内で自律実行し、追加権限が必要な時のみ問い合わせる。他の値は never (質問なし - CI/完全信頼) と granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval }。approvals_reviewer = 'auto_review' でレビューサブエージェントに承認を委譲も可能。ポリシー (親会社ガイド): 承認の代行は禁止 - approvals_reviewer='auto_review' や --approve-for-me は使わない。承認画面は必ず本人が確認する。",
         refs: [
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" },
           { label: "Config reference - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/config-file/config-reference" }

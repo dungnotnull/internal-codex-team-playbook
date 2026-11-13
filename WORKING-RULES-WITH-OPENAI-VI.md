@@ -1,9 +1,9 @@
 # WORKING RULES WITH OPENAI - Quy tắc làm việc với ChatGPT / Codex cho Team IT
 
-> **Phiên bản:** 1.2.1 · Ngày cập nhật: 2026-11-12 (v1.2.1: bổ sung đoạn protected paths §5.2; song hành 1:1 với bản tiếng Anh làm chuẩn **[WORKING-RULES-WITH-OPENAI.md](WORKING-RULES-WITH-OPENAI.md)**) (v1.1: §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược model §8; sửa gloss `--ephemeral`)
+> **Phiên bản:** 1.3 · Ngày cập nhật: 2026-11-13 (v1.3: align guide công ty mẹ - cấm full access cho mọi người, cấm đại diện duyệt approval, MCP cần duyệt của AI推進室 + cấm Google-family MCP, cấm browser automation cho nghiệp vụ, luồng sự cố: dừng/bảo toàn/báo cáo/vô hiệu hoá; v1.2.1: bổ sung đoạn protected paths §5.2; song hành 1:1 với bản tiếng Anh làm chuẩn **[WORKING-RULES-WITH-OPENAI.md](WORKING-RULES-WITH-OPENAI.md)**) (v1.1: §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược model §8; sửa gloss `--ephemeral`)
 > **Đối tượng:** Toàn bộ thành viên team (developer, BA, tester, lead) sử dụng tài khoản ChatGPT Plus / Pro / Business + Codex.
 > **Điều kiện đọc:** Đọc hết file này trước khi bắt đầu dùng ChatGPT/Codex cho công việc dự án. Sau đó làm bài trắc nghiệm **quiz/QUIZ-OPENAI-RULES.html** (40 câu, thang điểm 10, có bản tiếng Nhật ở nút ngôn ngữ phía trên).
-> **Nguồn:** Tất cả quy tắc dưới đây được tổng hợp từ tài liệu chính thức của OpenAI (ChatGPT Learn docs, Help Center, platform docs), các paper uy tín đã được verify link ngày 2026-11-12. Link nguồn đầy đủ nằm ở phần **§12. Nguồn tham khảo**.
+> **Chuẩn công ty mẹ:** nội dung theo guide công ty mẹ Codexアプリ安全利用ガイド-2.pdf (9 quy tắc). Nếu docs OpenAI cho phép một capability nhưng guide công ty mẹ giới hạn thì guide thắng - cả hai được đánh dấu ngay tại chỗ. dưới đây được tổng hợp từ tài liệu chính thức của OpenAI (ChatGPT Learn docs, Help Center, platform docs), các paper uy tín đã được verify link ngày 2026-11-12. Link nguồn đầy đủ nằm ở phần **§12. Nguồn tham khảo**.
 
 ---
 
@@ -55,10 +55,10 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 2. **Việc code sửa file thật:**
    - Repo **đã version-controlled** → Codex khởi động preset **Auto**: `--sandbox workspace-write --ask-for-approval on-request` (đọc/sửa/chạy lệnh trong workspace tự động; ra ngoài workspace hoặc cần network mới hỏi).
    - Repo/folder **chưa version-controlled** → mặc định **`read-only`** cho tới khi tin được (Codex có thể chờ "trust" thư mục qua onboarding prompt hoặc `/permissions`).
-   - Chỉ dùng **`danger-full-access` / `--yolo`** khi đã chốt ở mục §5 (chạy trong container bạn kiểm soát).
+   - **CẤM full access với mọi người**: không chuyển sang `--sandbox danger-full-access` / `--yolo` - guide công ty mẹ cấm với toàn bộ member (gồm lead), kể cả trong container/devcontainer. Cần phạm vi lớn hơn -> `workspace-write` + rules/on-request.
 3. **Việc chạy dài, song song nhiều nhánh:** dùng git worktrees + Codex Cloud; giao plan locally rồi delegate implementation lên cloud, review diff, mở PR.
 4. **Việc lặp định kỳ:** refine prompt tới khi ổn → lên lịch **Scheduled task** hoặc automation.
-5. **CI/automation (không tương tác):** dùng `codex exec` - **mặc định nó chạy sandbox read-only**; cho phép sửa file thì thêm `--sandbox workspace-write`; chốt quyền theo "least permissions". Lưu ý: **`--full-auto` đã bị gỡ** - script cũ phải đổi sang `--sandbox workspace-write` (hoặc `--approve-for-me` để agent tự route approval).
+5. **CI/automation (không tương tác):** dùng `codex exec` - **mặc định nó chạy sandbox read-only**; cho phép sửa file thì thêm `--sandbox workspace-write`; chốt quyền theo "least permissions". Lưu ý: **`--full-auto` đã bị gỡ** - script cũ phải đổi sang `--sandbox workspace-write`  (KHÔNG chuyển sang `--approve-for-me`: đó là ủy quyền duyệt, guide công ty mẹ cấm).
 
 ### Cẩm nang nhanh Codex (focus chính của team dev)
 
@@ -78,7 +78,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 **Config knobs chính (`config.toml`):**
 
 - `sandbox_mode`: `read-only | workspace-write | danger-full-access`.
-- `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`; `approvals_reviewer = "auto_review"` để subagent reviewer duyệt approval prompt thay bạn.
+- `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`; Docs còn có `approvals_reviewer = "auto_review"` (subagent reviewer duyệt hộ) - **chính sách team: KHÔNG dùng; màn hình duyệt luôn do chính bạn xác nhận** (guide công ty mẹ cấm đại diện duyệt).
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + allowlist/deniedlist domain (denied list luôn thắng). Proxy chỉ filter lệnh chạy trong sandbox local - web search/MCP/connector/cloud không đi qua (chi tiết §5.3).
 - `project_doc_max_bytes`: mặc định **32 KiB** cho AGENTS.md chain.
 - Web search cho chat local: **cached mode là mặc định** (dùng index do OpenAI giữ, hoạt động cả khi tắt network của lệnh); cần tin mới nhất mới `live` (`--search` cho 1 run; cấu hình `allowed_web_search_modes`).
@@ -141,7 +141,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 
 | Loại dữ liệu | Quy tắc |
 |---|---|
-| **Secrets/mã nguồn nhạy cảm tuyệt đối** (API key, token, private key, password, .env, key CI/CD, chứng chỉ) | **CẤM dán vào prompt, file đính kèm, AGENTS.md, project, memory.** Thay bằng placeholder (`$API_KEY`), tham chiếu tên biến. Nếu lỡ dán vào chat: xoá chat ngay, xoay vòng (rotate) secret ở hệ thống gốc, báo lead. |
+| **Secrets/mã nguồn nhạy cảm tuyệt đối** (API key, token, private key, password, .env, key CI/CD, chứng chỉ) | **CẤM dán vào prompt, file đính kèm, AGENTS.md, project, memory.** Thay bằng placeholder (`$API_KEY`), tham chiếu tên biến. Nếu lỡ dán vào chat: **dừng ngay, BẢO TOÀN bằng chứng (không tự xoá chat/log), báo lead/IT-security (thêm đầu mối dữ liệu cá nhân nếu có PII) rồi revoke + rotate secret** - xoá chat chỉ khi lead/IT chỉ thị (luồng sự cố công ty mẹ: dừng -> bảo toàn -> báo cáo -> vô hiệu hoá). |
 | **Mã nguồn dự án** | Chỉ cho Codex/Work đọc ở khu vực workspace được phép; không upload cả repo của khách/hợp đồng chưa cho phép lên cloud task. Chia sẽ mã trong phạm vi quyền đã duyệt. |
 | **Dữ liệu cá nhân (PII) khách hàng** | Khử định danh (anonymize/mask) trước khi đưa vào prompt hay file đính kèm. Cân nhắc synthetic data. |
 | **Tài liệu public / nội bộ thường** | Tự do dùng để phân tích, viết doc, so sánh. |
@@ -199,9 +199,9 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 | Chỉ đọc/phân tích code | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | Sửa code trong repo version-controlled | `workspace-write` + `on-request` (preset **Auto**) |
 | CI / script không tương tác | `codex exec --sandbox read-only --ask-for-approval never` hoặc workspace-write có rules |
-| Chấp nhận rủi ro có kiểm soát | `--sandbox danger-full-access` **chỉ trong container/devcontainer bạn giám sát** |
+| Full access (`--yolo`) | **CẤM với mọi người theo guide công ty mẹ - không ngoại lệ container/devcontainer, lead cũng vậy** |
 
-Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"not recommended"** trong tài liệu chính thức. Ai cần full-access phải chạy trong container + có lead duyệt.
+Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"not recommended"** trong tài liệu chính thức. full-access bị CẤM tuyệt đối theo guide công ty mẹ: không ai được chuyển sang full access, kể cả trong container. Cần phạm vi lớn hơn? dùng `workspace-write` + rules/on-request và tự rà từng approval.
 
 **Protected paths trong writable roots:** kể cả với policy `workspace-write` mặc định, một số path luôn được bảo vệ read-only, có tính đệ quy: `.git` (thư mục hoặc pointer file - cả git directory mà pointer trỏ tới), `.agents`, `.codex`, `.aws`. Đây là cơ chế để Codex ngăn agent tự sửa cấu hình của chính nó, AWS credentials, hoặc phá lịch sử git. Toàn bộ phần còn lại của writable root vẫn ghi được; các thư mục thường như `node_modules` hay `src` không nằm trong danh sách đặc biệt này.
 
@@ -216,7 +216,7 @@ Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"
 - **Review là một phần của công việc**: soát các bước nhìn được, nguồn được dùng, hành động công cụ, kết quả - văn bản trôi chảy/trần trụi tự tin không phải là bằng chứng nhiệm vụ thành công.
 - Mức review tỉ lệ **theo hậu quả** (ảnh hưởng người khác, khó rollback → review sâu hơn).
 - Lưu ý quan trọng: **sửa instruction không hủy được hành động đã thực hiện** - nếu agent báo đã cập nhật hệ thống ngoài, phải vào hệ thống đó xác nhận.
-- Tự động hoá review: **auto-review** (approvals_reviewer = "auto_review") cho phép một agent reviewer duyệt các approval prompt thay bạn - cấu hình được policy riêng.
+- Tự động hoá review: docs có **auto-review** (`approvals_reviewer = "auto_review"`) và CLI `--approve-for-me` (route approval qua automatic review) - **nhưng guide công ty mẹ CẤM ủy quyền duyệt: màn hình duyệt luôn do người phụ trách tự kiểm. Cả hai để OFF trong quy trình này.**
 - Khi có gì sai: **Redirect** (bảo sửa cụ thể) hoặc **Pause** (chặn, chờ quyết định). Dừng agent ≠ làm sạch hoàn toàn những gì đã chạy xong.
 
 📚 Nguồn: [Sandbox](https://learn.chatgpt.com/docs/sandboxing) · [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) · [Working with agents](https://learn.chatgpt.com/docs/working-with-agents) · [Permissions](https://learn.chatgpt.com/docs/permission-modes) · [Auto-review](https://learn.chatgpt.com/docs/sandboxing/auto-review) · [Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox)
@@ -246,13 +246,13 @@ Rules file khai báo **lệnh nào được cho phép / phải hỏi / bị cấ
 - Khi nhiều rule cùng khớp một lệnh, Codex áp **quyết định chặt nhất: `forbidden` > `prompt` > `allow`**.
 - `match` / `not_match` là "unit test inline": lệnh ví dụ được kiểm khi load rule, giúp tránh viết rule sai.
 - Lệnh compound (`bash -lc "a && b"`) được tách bằng tree-sitter nếu script là chuỗi tĩnh an toàn (chỉ từ thuần + toán tử `&&`/`||`/`;`/`|`). Nếu script dùng biến, redirection, substitution, wildcard... Codex **không tách** - cả invocation được coi như MỘT lệnh (`["bash","-lc","<script>"]`) và rules áp lên toàn bộ invocation đó (hành xử conservative: không tự cấp quyền cho lệnh giấu trong script động).
-- Khi bạn bấm **allow** trong TUI, Codex tự ghi `prefix_rule` vào `~/.codex/rules/default.rules` để lần sau không hỏi lại; reviewer có thể review file này như review code.
+- Khi bạn bấm **allow** trong TUI, Codex tự ghi `prefix_rule` vào `~/.codex/rules/default.rules` để lần sau không hỏi lại; reviewer có thể review file này như review code. **Chính sách (guide công ty mẹ): "luôn cho phép" chỉ dành cho lệnh chỉ-đọc an toàn - không bao giờ cho gửi ra ngoài, xoá, auth, Drive-family.**
 
 ### 6.3 Cấu hình `config.toml` (user/project)
 
 - User-level `~/.codex/config.toml`: model mặc định, reasoning effort, sandbox/approval, **profiles** cho từng loại việc.
 - Repo-level `.codex/config.toml` (chỉ khi project trusted): cấu hình theo dự án.
-- **MCP**: khai báo MCP servers (`codex mcp add ...`) để kết nối công cụ nội bộ; cẩn thận chỉ thêm server tin được - MCP đưa công cụ hành động mới cho agent.
+- **MCP**: cơ chế như docs (`codex mcp add ...`, bảng `[mcp_servers]`) - nhưng chính sách trước (guide công ty mẹ): **KHÔNG nối plugin / MCP server / liên kết ngoài chưa được duyệt.** MCP server mới chỉ được nối sau khi **xác nhận với AI推進室 (phòng Xúc tiến AI)**. **CẤM hoàn toàn Google-family MCP (điển hình: Google Drive)**: Drive có thể chứa credentials, dữ liệu ứng viên, hợp đồng; nếu màn hình duyệt xin nối Google-family MCP -> **từ chối + báo cáo**.
 - **Subagents**: hỗ trợ chia việc trong run phức tạp.
 - **Memories**: OFF mặc định; bật khi cần. **Không thay thế AGENTS.md.**
 - Ghi nhớ: **quy tắc bắt buộc của team nằm trong AGENTS.md/docs trong repo** (commit được, review được), không nằm trong memory cá nhân.
@@ -319,10 +319,10 @@ Tài liệu chính thức "Building an AI-Native Engineering Team" chia SDLC th�
 
 | # | Lỗi thường gặp | Hệ quả | Cách tránh |
 |---|---|---|---|
-| 1 | Dán secret/credential vào prompt | Secret vào log/hệ thống cloud, rủi ro lộ | Placeholder + biến môi trường; lỡ dán thì xoá chat + rotate key |
+| 1 | Dán secret/credential vào prompt | Secret vào log/hệ thống cloud, rủi ro lộ | Cấm dán; lỡ dán: dừng, giữ bằng chứng, báo lead/IT-security, revoke + rotate key |
 | 2 | Prompt cụt không ngữ cảnh | Kết quả đoán mò, sửa sai chỗ | Goal/Context/Output/Boundaries; @-mention file |
 | 3 | Tin tuyệt đối kết quả agent | Code sai logic, security lỗ hổng | Luôn verify: test + lint + review + repro; "fluent ≠ đúng" |
-| 4 | Bật `--yolo`/full-access cho tiện | Rủi ro toàn máy; tài liệu chính thức ghi "not recommended" | Preset Auto; full-access chỉ trong container |
+| 4 | Bật `--yolo`/full-access cho tiện | Rủi ro toàn máy; tài liệu chính thức ghi "not recommended" | Preset Auto; full-access bị CẤM hoàn toàn (guide công ty mẹ) - kể cả trong container |
 | 5 | Bật network mặc cho dễ | Agent ra ngoài mạng vô kiểm soát (exfil, gọi API lạ) | Mặc định tắt; bật có allowlist khi cần |
 | 6 | Cho agent hoạt động trên nội dung ngoài tin được (web/PR/file khách) với quyền cao | Prompt injection → hành động không mong muốn | Sandbox chặt; approval on-request; ưu tiên `cached`/`indexed` search mode |
 | 7 | Nhồi 1 file AGENTS.md khổng lồ, mơ hồ | Agent bỏ qua hướng dẫn; vượt 32KiB limit | Ngắn, cụ thể, chia file; cập nhật khi thấy lặp lỗi |
@@ -377,15 +377,15 @@ Yêu cầu nguồn                    -> web search + nêu rõ nguồn cần đ�
 read-only + on-request            -> phân tích, không sửa
 workspace-write + on-request (Auto)-> default cho repo
 codex exec --sandbox read-only --ask-for-approval never -> CI
---yolo / danger-full-access       -> chỉ trong container + lead duyệt
+--yolo / danger-full-access       -> CẤM (guide công ty mẹ) - với mọi người
 network_access = true             -> chỉ khi cần + allowlist domain
 
 # An toàn
 Tuyệt đối không: secret, .env, private key, PII khách, source nhạy chưa duyệt
-Lỡ dán:  xoá chat -> rotate secret -> báo lead
+Lỡ dán:  dừng -> giữ bằng chứng (không tự xoá) -> báo lead/IT -> revoke + rotate
 Nghi ngờ: prompt injection -> ngừng + review nguồn vào
 
-# Đã verify link trước khi dùng (nguồn chính thức)
+# Browser/computer automation -> CẤM cho hành động nghiệp vụ (người tự làm)
 https://learn.chatgpt.com/llms.txt          -> index toàn bộ docs (.md đợi sẵn)
 https://learn.chatgpt.com/docs/whats-new    -> cập nhật hàng tuần
 https://academy.openai.com                      -> khóa học chính thức
@@ -424,7 +424,7 @@ https://academy.openai.com                      -> khóa học chính thức
 **OpenAI Platform (API docs):**
 - [Prompt engineering](https://platform.openai.com/docs/guides/prompt-engineering) · [Safety best practices](https://platform.openai.com/docs/guides/safety-best-practices) · [Prompt caching](https://platform.openai.com/docs/guides/prompt-caching) · [Production best practices](https://platform.openai.com/docs/guides/production-best-practices) · [Models](https://platform.openai.com/docs/models) · [API Reference](https://platform.openai.com/docs/api-reference)
 
-**Khác:**
+**Nội bộ (công ty mẹ):**
 - [openai/codex (GitHub)](https://github.com/openai/codex) · [agents.md](https://agents.md) · [skills.sh - The Agent Skills Directory](https://skills.sh) · [OpenAI Academy](https://academy.openai.com) · [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
 - Bảo mật AI: [OWASP GenAI - LLM Top 10 for 2025](https://genai.owasp.org/llm-top-10/)
 
