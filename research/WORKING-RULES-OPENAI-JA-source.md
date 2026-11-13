@@ -1,6 +1,6 @@
 # WORKING RULES WITH OPENAI - ChatGPT / Codex 向け IT チームルール
 
-> **バージョン:** 1.3 · 更新日: 2026-11-13 (v1.3: 親会社ガイドとの整合 - フルアクセスは全員禁止、承認の代行は禁止、MCP には AI推進室の承認が必要で Google 系 MCP は全面禁止、業務システムでのブラウザ自動化は禁止、インシデントフローは 停止/保全/報告/無効化。v1.2.1: 保護パス §5.2 + ベトナム語版。v1.2: 英語正規版。v1.1: ルールファイルの詳細化、skills.sh、モデル戦略、`--ephemeral` の用語説明を修正)
+> **バージョン:** 1.3.1 (v1.3.1: 親会社ガイド round-2 - outbound/PR/採用/マスク仕様/4点宣言/rules 強制/自動化 read-only; v1.3: 更新日: 2026-11-13 (v1.3: 親会社ガイドとの整合 - フルアクセスは全員禁止、承認の代行は禁止、MCP には AI推進室の承認が必要で Google 系 MCP は全面禁止、業務システムでのブラウザ自動化は禁止、インシデントフローは 停止/保全/報告/無効化。v1.2.1: 保護パス §5.2 + ベトナム語版。v1.2: 英語正規版。v1.1: ルールファイルの詳細化、skills.sh、モデル戦略、`--ephemeral` の用語説明を修正)
 > **親会社ガイド:** 本版は親会社ガイド **Codexアプリ安全利用ガイド-2.pdf**（9 か条、§12）に従います。公式 OpenAI ドキュメントが機能を許容していても、親会社ガイドが制限している場合は親会社ガイドを優先します - 該当箇所には両方の注記を本文中にインラインで記載しています。
 > **ベトナム語版:** [`WORKING-RULES-WITH-OPENAI-VI.md`](WORKING-RULES-WITH-OPENAI-VI.md) - 本ファイルと 1:1 で同期しています。
 > **日本語版:** 英語版 v1.3 からの翻訳
@@ -60,8 +60,8 @@
    - バージョン管理されていないフォルダ → 信頼できるようになるまで既定で **`read-only`**（Codex はオンボーディング プロンプトや `/permissions` で "trust" を待つ場合があります）。
    - **フルアクセスは全員禁止**: `--sandbox danger-full-access` / `--yolo` には決して切り替えないこと - 親会社ガイドは、リードを含むすべてのメンバーに対してこれを禁止しており、コンテナ/devcontainer の内部でも例外はありません。より広いスコープが必要なら `workspace-write` + rules/on-request。
    - **承認を代行させない**: `--approve-for-me` や `approvals_reviewer = "auto_review"` は決して使わないこと - 承認画面は責任者が自分自身で確認します（親会社ガイド）。
-3. **長期間・複数ブランチにまたがる作業:** git worktrees + Codex Cloud を使います。ローカルで計画し、実装をクラウドへ委譲し、diff をレビューして PR をオープンします。
-4. **繰り返し発生する作業:** プロンプトが安定するまで磨きます → **Scheduled task**/automation としてスケジュールします。
+3. **長期間・複数ブランチにまたがる作業:** git worktrees + Codex Cloud を使います。ローカルで計画し、実装をクラウドへ委譲し、diff をレビューして PR をオープンします。 **ポリシー（親会社ガイド）: チームのワークスペースを超える一切（PR のオープン、公開）は人間がレビューするアクションです - エージェントは直接 push せず、マージは人間だけが行います。Codex Cloud + ワークスペースの GitHub app は既に承認済みのプラットフォーム経路（クラウド環境は既定でオフライン）。新しい外部サービスの接続は引き続き §6.3 の統合/MCP 承認が必要です。**
+4. **繰り返し発生する作業:** プロンプトが安定するまで磨きます → **Scheduled task**/automation としてスケジュールします。 自動化は **read-only**（または以前に承認済みの読み取り専用ルールのみ）で実行します: 無人実行は書き込み・ネットワーク開放・承認の委譲をしません - 承認画面が出た場合は、やはり責任者が自分で回答します（親会社ガイド）。
 5. **CI/自動化（非対話）:** `codex exec` を使います - **既定では読み取り専用（read-only）のサンドボックスで実行**されます。編集を許すには `--sandbox workspace-write` を追加し、権限は "least permissions"（最小権限）の原則に固定します。注意: **`--full-auto` は廃止されました** - 古いスクリプトは `--sandbox workspace-write` へ移行してください（`--approve-for-me` へ移行してはいけません: 承認の自動レビューへの振り分けであり、親会社ガイドが禁止しています）。
 
 ### Codex クイックハンドブック（チームの主軸）
@@ -85,10 +85,10 @@
 - `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`。ドキュメントにはさらに `approvals_reviewer = "auto_review"`（レビューサブエージェントがあなたの代わりにプロンプトを承認する）も載っていますが、**チーム方針: 使用しないこと。承認画面は必ず自分自身で確認する**（親会社ガイドは承認の代行を禁止）。
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy`（実験的、**既定でオフ**）+ ドメイン許可/拒否リスト（拒否リストが常に優先）。プロキシのフィルタ対象はローカルサンドボックス内で実行されるコマンドのみ - Web 検索/MCP/コネクタ/クラウドのトラフィックは経由しません（詳細は §5.3）。
 - `project_doc_max_bytes`: AGENTS.md チェーンの既定値は **32 KiB**。
-- ローカルチャットの Web 検索: **cached モードが既定**（OpenAI が管理するインデックスを使用。コマンド自体のネットワークがオフでも機能します）。最新情報が必要なときだけ `live` を使います（単発の実行には `--search`、`allowed_web_search_modes` で設定）。
+- ローカルチャットの Web 検索: **cached モードが既定**（OpenAI が管理するインデックスを使用。コマンド自体のネットワークがオフでも機能します）。最新情報が必要なときだけ `live` を使います（単発の実行には `--search`、`allowed_web_search_modes` で設定）。 親会社ガイド: `cached`/`indexed` を維持し、`live` は必要かつ機密データが文脈に無いときに限ります。
 - ローカルの Codex memories は **既定でオフ** - Settings → Personalization → "Enable Codex memories"、またはチャットごとに `/memories` で有効化します。
 
-**ChatGPT 経由の支払いでのモデルと effort:** GPT-6 Luna = 最軽量/最速（小さな編集、データ抽出）、GPT-6 Astra = 最強（利用量を節約しないときの既定）、GPT-6.1 Sol と Terra はその中間（Terra は、渡された素材からの簡潔な文章作成と、ゴールが明確に定義された computer-use タスク向け）。effort との組み合わせ: 例えば小さな編集には `Luna · Low`、複数アプリにまたがる文脈探索/トリアージには `Luna · Extra high`。
+**ChatGPT 経由の支払いでのモデルと effort:** GPT-6 Luna = 最軽量/最速（小さな編集、データ抽出）、GPT-6 Astra = 最強（利用量を節約しないときの既定）、GPT-6.1 Sol と Terra はその中間（Terra は、渡された素材からの簡潔な文章作成と、ゴールが明確に定義された computer-use タスク向け - 注: この運用では computer-use/ブラウザ自動化は使用しません（親会社ガイド））。effort との組み合わせ: 例えば小さな編集には `Luna · Low`、複数アプリにまたがる文脈探索/トリアージには `Luna · Extra high`。
 
 📚 参考: [Sandbox](https://learn.chatgpt.com/docs/sandboxing) · [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) · [Codex environments](https://learn.chatgpt.com/docs/environments/modes) · [Worktrees](https://learn.chatgpt.com/docs/environments/git-worktrees) · [Non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) · [Scheduled tasks](https://learn.chatgpt.com/docs/automations) · [Long-running work](https://learn.chatgpt.com/docs/long-running-work) · [Authentication](https://learn.chatgpt.com/docs/auth) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Web search](https://learn.chatgpt.com/docs/web-search) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 
@@ -103,7 +103,7 @@
 - **Output:** 形式、分量、必要な詳細レベル。
 - **Boundaries:** 変えてはいけないもの/事前に確認すべきもの（最重要の 1-2 で十分 - すべてのステップを管理しようとしない）。
 
-> 手順書ではなく **望む成果** を書きます。ただし、プロセスそのものが成果物である場合は別です。特に Work/Codex では、**"done"（完了）がどんな状態か** を明示します（例: レポートの見本、完了の定義、通過すべきテスト）。
+> 手順書ではなく **望む成果** を書きます。ただし、プロセスそのものが成果物である場合は別です。特に Work/Codex では、**"done"（完了）がどんな状態か** を明示します（例: レポートの見本、完了の定義、通過すべきテスト）。 **チーム方針（親会社ガイド）: 業務データを扱う Codex タスクは 4 点を必ず宣言します - 対象（許可されたフォルダ/ファイル）、作業（何をするか）、禁止事項（削除なし/外部送信なし/フォルダ外アクセスなし）、確認ステップ（実行前に候補/差分を見せる）。「1-2 の境界で十分」のヒントは通常のチャット向けで、業務データのタスクでは 4 点が必須です。**
 
 ### 3.2 公式ドキュメントが推奨する Tips
 
@@ -147,8 +147,12 @@
 |---|---|
 | **シークレット/極めて機密性の高いソースコード**（API キー、トークン、秘密鍵、パスワード、.env、CI/CD キー、証明書） | **プロンプト、添付ファイル、AGENTS.md、プロジェクト、メモリには絶対に貼り付けない。** プレースホルダ（`$API_KEY`）を使い、変数名で参照する。誤って貼り付けた場合: **停止する。証跡を保全する（チャット/ログを自分で削除しない）。リード/IT セキュリティへ報告する（個人データが関わる場合は個人情報窓口にも）。そのうえでシークレットを失効 + ローテーションする**。チャットの削除は、リード/IT セキュリティの指示があるときに限ります（親会社インシデントフロー: 停止 → 保全 → 報告 → 無効化）。 |
 | **プロジェクトのソースコード** | Codex/Work に読み取らせるのは承認済みのワークスペース領域のみ。承認なく顧客/契約リポジトリ全体をクラウドタスクへアップロードしない。コードは許可されたアクセス範囲内でのみ共有する。 |
-| **顧客の個人データ（PII）** | プロンプトや添付ファイルへ入れる前に、仮名化/マスク処理で個人を特定できないようにする。合成データの利用も検討する。 |
-| **公開情報/通常の社内ドキュメント** | 分析、ドキュメント作成、比較に自由に使用できる。 |
+| **顧客の個人情報（PII）** | 識別子は絶対に貼りません。親会社ガイドのマスク仕様: ID コードに置き換える（対応表は別管理）。データからは**メールアドレス/電話番号を削除**してから渡す。住所 → 最上位の行政区分だけ残す。生年月日 → 年代（例:「30 代」）。勤務先/学校名 → 業界/職種/規模のカテゴリに置き換える。健康データは一切渡さない。合成データの利用も検討する。 |
+| **公開情報/通常の社内ドキュメント** | 分析、ドキュメント作成、比較に自由に使用できる - **ただし認証情報/PII を含まない場合に限る。疑わしい場合は先にマスクする（PII 行を見る）。** |
+
+**セッションハイジーン（親会社ガイド）:** 業務オブジェクト（案件/応募者/プロジェクト）ごとにセッションを分け、貼り付け前にクリップボードを見直します - 認証情報や個人情報が作業内容に混入しないようにします。
+
+**ブラウザ自動操作（親会社ガイド）:** ブラウザ拡張、@Browser/@Chrome 型の自動操作、コンピューター操作は業務システムでは禁止です - ログイン、閲覧、ダウンロード、送信、公開、更新は人が行います。
 
 **セッション衛生（親会社ガイド）:** 業務オブジェクトごと（案件/申請者/プロジェクト）にセッションを分け、貼り付けの前にクリップボードを再確認します。認証情報や個人データを作業コンテンツに紛れ込ませてはいけません。
 
@@ -162,7 +166,7 @@
 - **テンポラリーチャット:** 履歴には入らず、メモリも使わず、改善にも使用されません - ただし OpenAI は安全のため **最大 30 日間コピーを保持** します。テンポラリーチャットを "保存" すると、個人設定に従って通常のチャットに変わります。
 - **保持期間（検証済みの数値）:** Business - 削除/未保存の会話は、本番システムから **30 日以内** に消去されます（法的ホールドは除く）。Agent mode - コンテンツ（チャット、閲覧履歴、スクリーンショット）はユーザーが削除するまで保持され、削除後 **90 日以内** に消去されます。プロジェクト/ファイルの削除 - **30 日**。削除済みメモリのログ - **30 日**。
 - **Agent mode:** Plus は ~**40** 件/月、Pro は ~400 件、Business/Enterprise は ~40 件（フレキシブル価格では 1 メッセージあたり 30 credits）。エージェントにアプリ/サイトへの **サインインを** 任せることは、機密データ（メール、ファイル、設定）へのアクセスを与えることと同じです。OpenAI は Agent mode の **prompt injection リスクを明示的に文書化** しています - 接続するアプリは必要最小限にし、会話にパスワードを入力しない（**takeover mode** を使う）、不審な点があれば停止する、機密性の高いセッションの後はエージェントのブラウザデータを消去する。
-- **Memory** は過去のチャット、Library/Space ファイル、**接続済みアプリ（Gmail など）** から引き出せます - アプリに渡した機密情報が、後のチャットで "resurface"（再浮上）する可能性があります。封じ込めには **project-only memory**（プロジェクト限定メモリ）を使います。Memory はあくまで "recall layer"（想起レイヤー）であり、必須のルールは `AGENTS.md`/ドキュメント（§6）に置きます。
+- **Memory** は過去のチャット、Library/Space ファイル、**接続済みアプリ（Gmail など）** から引き出せます - アプリに渡した機密情報が、後のチャットで "resurface"（再浮上）する可能性があります。封じ込めには **project-only memory**（プロジェクト限定メモリ）を使います。Memory はあくまで "recall layer"（想起レイヤー）であり、必須のルールは `AGENTS.md`/ドキュメント（§6）に置きます。 **（ポリシー: 業務には Gmail/Drive 系コネクタを使用しません - 親会社ガイド）**
 - **Projects:** 共有プロジェクトでは **すべてのメンバーが、その中の全ファイルを閲覧 + ダウンロードできます**。個人アカウントのプロジェクトは、オーナーとすべてのコントリビューターの学習共有がオンである場合に限り学習に使われます。Business/Enterprise は既定で学習なし。プロジェクトファイルにシークレットを置いてはいけません。
 - **Plugins/apps/connectors:** Business では apps が **既定でオン** - 管理者は早い段階で Plugins ページを監査すべきです。Enterprise は既定でオフ + RBAC。アプリごとの権限モード（Always ask / Allow read / low-risk / all - 最後のものは "elevated risk"（危険度が高い）と表示される）や、ドメイン許可リスト、DLP-lite（Drive 共有ドライブ、SharePoint/Teams の秘密度ラベルなど）があります。**カスタム MCP アプリは OpenAI 検証済みではありません** - 第三者へ送られたデータはその先のポリシーに従い、30 日より長く保持される可能性があります。
 
@@ -176,7 +180,7 @@
 ### 4.4 把握しておく 2025-2026 年の更新情報（古いルールを適用しないために）
 
 - **Universal Usage Policies** は全製品に適用されます。改訂版は **2026-11-20 に発効** します（追加事項: OpenAI の出力で競合モデルを学習することの禁止、防衛/セキュリティ用途での承認要件、モデルアクセス仲介事業者へのレビュー要件）*（ポリシーページはスクリプトクライアントをブロックします - 403 - 2026-11-12 にブラウザで直接開いて検証済み）*。
-- ポリシーの柱 "Respect privacy"（プライバシーの尊重）: 許可のない人物のプロファイリング/監視/スコアリングはしない。"Empower people": **human review（人間の確認）なしで、重大な決定（採用、与信、健康、法律問題など）を自動化しない** - チームが ChatGPT 上に構築するすべてのワークフローは、この種の決定について human in the loop を維持しなければなりません。
+- ポリシーの柱 "Respect privacy"（プライバシーの尊重）: 許可のない人物のプロファイリング/監視/スコアリングはしない。"Empower people": **human review（人間の確認）なしで、重大な決定（採用、与信、健康、法律問題など）を自動化しない** - チームが ChatGPT 上に構築するすべてのワークフローは、この種の決定について human in the loop を維持しなければなりません。 **親会社ガイドは採用についてさらに厳格です: 採否（hire/reject）、応募者の順位付け、人物評価を Codex に委ねません - 直接使える状態のドラフトでさえも。これらの判断は人間が自分で行います。**
 - **ChatGPT Atlas ブラウザはサービス終了（retired）** しました。Atlas のデータは ChatGPT とは別物であり、ChatGPT のチャットを削除しても Atlas のデータは削除されません。チームでまだ利用していた場合は、管理者向けガイダンスに従って移行 + クリーンアップしてください。
 - **Custom GPTs は廃止の方向**（plugins への移行）です。Enterprise は新規 GPT の作成を 2026-10-26 に停止し、2026-12-11 に完全終了します。個人アカウントでは新しい GPT を作成できません。GPT を土台にした新しいワークフローを始めないこと。
 - Operator は **agent mode へ統合** されました。agent mode の枠は §4.2 のとおり月単位です。
@@ -206,20 +210,20 @@
 |---|---|
 | 読み取り専用/コード分析 | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | バージョン管理下リポジトリでのコード編集 | `workspace-write` + `on-request`（**Auto** プリセット） |
-| CI/非対話スクリプト | `codex exec --sandbox read-only --ask-for-approval never`、または rules 付きの workspace-write |
+| CI/非対話スクリプト | `codex exec --sandbox read-only --ask-for-approval never`、または rules 付きの workspace-write（`never` と automation が許されるのは read-only の場合のみ - 承認画面が存在しないため。無人の書き込み/ネットワーク実行は禁止） |
 | フルアクセス（"full access" / `--yolo`） | **親会社ガイドにより全員禁止 - コンテナ/devcontainer の例外なし、リードも含めて** |
 
 ハードルール: `--dangerously-bypass-approvals-and-sandbox`（エイリアス `--yolo`）は、公式ドキュメントで **"not recommended"**（非推奨）とされており、親会社ガイドにより **全面的に禁止されています: コンテナ内部を含め、フルアクセスへ切り替える者はいません。** より広いスコープが必要な場合は、`workspace-write` + rules/on-request を使い、すべての承認を必ず自分自身で確認してください。
 
 **承認の姿勢（親会社ガイド）:** 何かを許可するときは "this time only"（今回のみ）を優先します。永続的な "always allow"（常に許可）は、安全な読み取り専用操作に限ります - 外部送信、削除、認証、Drive 系連携に使ってはいけません。
 
-**コマンドの姿勢（親会社ガイド付録）:** 作業フォルダ内の読み取り専用の確認コマンド（`cat`、`head`、`tail`、`grep`、`find`、`ls`、`pwd`、`git status/diff`）は、内容を確認したうえで許可できます。状態を変える操作（`mv`、`cp`、`mkdir`、`sed -i`、出力リダイレクト `>`）は、候補リストを先にレビューします。**却下**: `rm` / `rm -rf`（削除は不可逆です）。**却下して報告**: `curl` / `wget` / `scp` / `ssh` / `git push`（外部転送）、`cat .env` / `env` / `sudo` / `chmod 777`（認証情報の読み出し、権限の緩和）。コマンドに確信が持てないときは、判断の前に Codex に "explain what this command does"（このコマンドが何をするか説明して）と尋ねてください。
+**コマンドの姿勢（親会社ガイド付録）:** 作業フォルダ内の読み取り専用の確認コマンド（`cat`、`head`、`tail`、`grep`、`find`、`ls`、`pwd`、`git status/diff`）は、内容を確認したうえで許可できます。状態を変える操作（`mv`、`cp`、`mkdir`、`sed -i`、出力リダイレクト `>`）は、候補リストを先にレビューします。**却下**: `rm` / `rm -rf`（削除は不可逆です）。**却下して報告**: `curl` / `wget` / `scp` / `ssh` / `git push`（外部転送）、`cat .env` / `env` / `sudo` / `chmod 777`（認証情報の読み出し、権限の緩和）。コマンドに確信が持てないときは、判断の前に Codex に "explain what this command does"（このコマンドが何をするか説明して）と尋ねてください。 **機械的な強制: この姿勢は rules ファイルで強制できます - `.codex/rules/` に `prefix_rule` をコミット: `rm` → `forbidden`; `mv` / `cp` / `sed -i` / 出力 `>` → `prompt`; `git push` → `forbidden`（プロジェクト層、trusted）。サンドボックス内の書き込みコマンドは承認画面を出さないため、rules ファイルこそがこの姿勢を実効化します。**
 
 **書き込み可能ルート内の保護パス:** 既定の `workspace-write` ポリシー下でも、いくつかのパスは再帰的に常に読み取り専用で保護されます: `.git`（ディレクトリまたはポインタファイル - 解決後の Git ディレクトリも含む）、`.agents`、`.codex`、`.aws`。これによって Codex は、エージェントが自分自身の設定、AWS 認証情報、git 履歴を書き換えるのを防ぎます。それ以外の書き込み可能ルート内の内容は書き込み可能のままであり、`node_modules` や `src` といった通常のフォルダはこの特別リストには含まれません。
 
 ### 5.3 ネットワークアクセス
 
-- `workspace-write` は、ネットワークが **既定でオフ** です。許可するには: `[sandbox_workspace_write] network_access = true` を設定 +（`features.network_proxy` を有効化する場合）**ドメイン許可リスト**（拒否リストが常に優先）。
+- `workspace-write` は、ネットワークが **既定でオフ** です。許可するには: `[sandbox_workspace_write] network_access = true` を設定 +（`features.network_proxy` を有効化する場合）**ドメイン許可リスト**（拒否リストが常に優先）。 **ポリシー（親会社ガイド）: ネットワークは、必要最小限の、既に承認済みの内部宛先に限って開放します。直接の外向きコマンド（`curl`/`wget`/`scp`/`ssh`/`git push`、アップロード）は、却下して報告します（§5.2 のコマンドの姿勢）。`live` Web 検索は生のコマンド送信ではなく OpenAI 経由の Web 検索機能ですが、既定は `cached`/`indexed` を維持し、`live` は必要かつ機密データが文脈に無い場合だけ使います。**
 - プロキシが保護するのは **サンドボックス内のコマンド** だけです - Web 検索、MCP、コネクタ、クラウドのトラフィックは **プロキシを経由しません**。それぞれ固有の設定で個別に制御します（例: クラウドタスクのインターネットアクセスは既定でオフ）。
 
 ### 5.4 Human-in-the-loop（HITL）- 人間の役割は縮小しない
@@ -275,7 +279,7 @@
 - 配置場所：**個人用** = `~/.agents/skills`。**チーム共有** = リポジトリの `.agents/skills/` にコミットします。
 - ひな形作成には **`$skill-creator`** スキルを使うと早く始められます。最初のバージョンはローカルで育て、準備ができたらリポジトリで共有します。
 - 参照ハブ/発見：**skills.sh**（「The Agent Skills Directory」- 著名な GitHub リポジトリからスキルを収集）。加えて、AI エージェントのリリースノートやドキュメントを追い、新しいスキルを見逃さないようにします。
-- サードパーティのスキルは、**PR と同じようにレビューします**。チーム全体に導入する前に、SKILL.md を通読し、実行されるコマンドと使用するデータソースを確認します。
+- サードパーティのスキルは、**PR と同じようにレビューします**。チーム全体に導入する前に、SKILL.md を通読し、実行されるコマンドと使用するデータソースを確認します。 **PR 方式のレビューは技術的なステップであって承認ではありません: チーム全体への導入にはリードのサインオフが必要で、MCP/統合/外部接続を追加するスキルは先に §6.3 の承認フロー（AI推進室）に従います。**
 
 📚 参考: [AGENTS.md (Codex)](https://learn.chatgpt.com/docs/agent-configuration/agents-md) ・ [agents.md (open standard)](https://agents.md) ・ [Rules](https://learn.chatgpt.com/docs/agent-configuration/rules) ・ [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) ・ [MCP](https://learn.chatgpt.com/docs/extend/mcp) ・ [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) ・ [Customization overview (skills)](https://learn.chatgpt.com/docs/customization/overview) ・ [skills.sh](https://skills.sh) ・ [openai/codex (GitHub)](https://github.com/openai/codex)
 
@@ -290,7 +294,7 @@
 | **計画 / 要件分析** | エージェントは仕様を読み、コードベースと突き合わせ、あいまいな点を指摘し、サブタスクに分解し、難易度を見積もる | ストーリーポイントの見積もり、優先度/順序の決定 - **プロダクトの意思決定は人間が行う** |
 | **設計** | ひな形（ボイラープレート）の生成、画像/figma からのプロトタイピング、デザイン → コンポーネントへのマッピング | アーキテクチャ、パターン、品質 + アクセシビリティ、UX の方向性 |
 | **実装** | 仕様どおりに機能をエンドツーエンドで実装（データモデル、API、UI、テスト、PR 説明） | 重要なアーキテクチャ/パフォーマンス経路のレビュー、コードベースのパターンの維持 |
-| **コードレビュー** | ローカルの `/review`、GitHub の `@codex review`、自動 PR レビュー、セキュリティレビュー | 差分を読み、マージを判断する。Codex のコメントは提案であり、裁定ではない |
+| **コードレビュー** | ローカルの `/review`、GitHub の `@codex review`、自動 PR レビュー、セキュリティレビュー（これらはコメントを書くだけで、承認/マージはしません） | 差分を読み、マージを判断する。Codex のコメントは提案であり、裁定ではない。すべての PR は人間がレビューしてマージします（親会社ガイド） |
 | **テスト / 受け入れ** | テストを作成し、標準パイプライン（`lint`、最小限の関連テストスイート）を実行し、修正後に再実行する | ビジネス受け入れ、プロダクトのエッジケース |
 | **保守 / ドキュメント** | 差分から README、CHANGELOG、ADR を作成/更新し、ドキュメントのリンクを確認する | ドキュメント標準の管理。重要な情報の検証 |
 
@@ -320,8 +324,8 @@
   - モデルを適正サイズにする（model-selection ガイド）。小さなタスク → 軽量モデル/低 effort（Low）。Medium/High/Extra High は複雑な仕事だけに。
   - 必要なのが一部だけなら、巨大なファイルをプロンプトに詰め込まない（該当部分だけ添付する）。
   - Web 検索モードは `cached`/`indexed` を既定に。`live` は最新情報が本当に必要なときだけ使う。
-  - 安定した定常作業 → 自動化をスケジュール登録して**時間を節約し、プロセスを一貫させる**（注意：自動実行も**手動実行と同じように使用量としてカウント**されます。クォータは減りません）。
-  - **`danger-full-access`** の開放には注意：Web 検索は既定で**黙って `live` に切り替わります** → `cached` よりプロンプトインジェクションのリスクが上がります（ドキュメントの言い方では、cached はリスクを "lowers - but doesn't remove -" するだけ。`live` に別の料金はありません）。
+  - 安定した定常作業 → 自動化をスケジュール登録して**時間を節約し、プロセスを一貫させる**（注意：自動実行も**手動実行と同じように使用量としてカウント**されます。クォータは減りません）。 自動化は read-only で実行します; 無人の書き込み/ネットワーク実行にはリードの承認が必要です。
+- **`danger-full-access` は開放しません - 親会社ガイドにより全員禁止です（コンテナ内の例外もありません）。** より広い到達範囲は `workspace-write` + 承認済み内部ドメインの許可リストで実現し、Web 検索は既定で `cached`/`indexed` を維持します（ドキュメントの注記: フルアクセスにすると検索は黙って `live` に切り替わり、プロンプトインジェクションのリスクが上がります - オフにしておくもう一つの理由）。
 
 📚 参考: [Pricing (ChatGPT Learn)](https://learn.chatgpt.com/docs/pricing) ・ [Help: using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan) ・ [Model selection](https://learn.chatgpt.com/docs/model-selection) ・ [Feature maturity](https://learn.chatgpt.com/docs/feature-maturity)
 
@@ -365,6 +369,7 @@
 **リード/管理者：**
 - [ ] プロジェクトの AGENTS.md を新しい規約で更新したか。`## Code Review Rules` セクションは現行のまま有効か？
 - [ ] 管理コンソール：プラグイン/スキル/メンバーシップのスコープは適切か。必要に応じて監査ログ + 分析を確認したか？
+- [ ] 未承認の MCP/plugin/外部連携が残っていないか。新しい MCP server には AI推進室の承認記録があるか。残存接続/権限は定期的に確認するか？
 - [ ] 未承認の MCP/プラグイン/外部連携を接続していないか。新しい MCP サーバーにはすべて AI推進室の承認記録があるか？残存する接続/権限を定期的にレビューしているか？
 - [ ] 実システムへの操作（送信/公開/デプロイ）に関する「実行前に確認」の要件をレビューしたか？
 - [ ] オンボーディング：メンバー全員が、プロジェクトで ChatGPT/Codex を使う前にこのファイルを読み、クイズを完了しているか？
@@ -381,7 +386,7 @@
                                        並列実行 / PR の引き渡しなら Cloud)
 
 # プロンプト (4 部構成)
-Goal / Context @file / Output format / Boundaries + "いつ完了か"
+Goal / Context @file / Output format / Boundaries + "いつ完了か"業務データのタスクは: 対象 / 作業 / 禁止 / 実行前確認 (親会社ガイド)
 複数ステップのタスク                -> まず /plan。長期のゴールは /goal
 エージェントの実行中                -> Codex CLI: Enter = steer, Tab = queue
 出典が必要                          -> web search + 出典の提示を要求

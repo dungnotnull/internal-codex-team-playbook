@@ -1,6 +1,6 @@
 # WORKING RULES WITH OPENAI - Quy tắc làm việc với ChatGPT / Codex cho Team IT
 
-> **Phiên bản:** 1.3 · Ngày cập nhật: 2026-11-13 (v1.3: align guide công ty mẹ - cấm full access cho mọi người, cấm đại diện duyệt approval, MCP cần duyệt của AI推進室 + cấm Google-family MCP, cấm browser automation cho nghiệp vụ, luồng sự cố: dừng/bảo toàn/báo cáo/vô hiệu hoá; v1.2.1: bổ sung đoạn protected paths §5.2; song hành 1:1 với bản tiếng Anh làm chuẩn **[WORKING-RULES-WITH-OPENAI.md](WORKING-RULES-WITH-OPENAI.md)**) (v1.1: §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược model §8; sửa gloss `--ephemeral`)
+> **Phiên bản:** 1.3.1 · Ngày cập nhật: 2026-11-13 (v1.3.1: round-2 - chính sách outbound/PR/tuyển dụng/masking/4-điểm/rules-enforcement/automation read-only; v1.3: align guide công ty mẹ - cấm full access cho mọi người, cấm đại diện duyệt approval, MCP cần duyệt của AI推進室 + cấm Google-family MCP, cấm browser automation cho nghiệp vụ, luồng sự cố: dừng/bảo toàn/báo cáo/vô hiệu hoá; v1.2.1: bổ sung đoạn protected paths §5.2; song hành 1:1 với bản tiếng Anh làm chuẩn **[WORKING-RULES-WITH-OPENAI.md](WORKING-RULES-WITH-OPENAI.md)**) (v1.1: §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược model §8; sửa gloss `--ephemeral`)
 > **Đối tượng:** Toàn bộ thành viên team (developer, BA, tester, lead) sử dụng tài khoản ChatGPT Plus / Pro / Business + Codex.
 > **Điều kiện đọc:** Đọc hết file này trước khi bắt đầu dùng ChatGPT/Codex cho công việc dự án. Sau đó làm bài trắc nghiệm **quiz/QUIZ-OPENAI-RULES.html** (40 câu, thang điểm 10, có bản tiếng Nhật ở nút ngôn ngữ phía trên).
 > **Chuẩn công ty mẹ:** nội dung theo guide công ty mẹ Codexアプリ安全利用ガイド-2.pdf (9 quy tắc). Nếu docs OpenAI cho phép một capability nhưng guide công ty mẹ giới hạn thì guide thắng - cả hai được đánh dấu ngay tại chỗ. dưới đây được tổng hợp từ tài liệu chính thức của OpenAI (ChatGPT Learn docs, Help Center, platform docs), các paper uy tín đã được verify link ngày 2026-11-12. Link nguồn đầy đủ nằm ở phần **§12. Nguồn tham khảo**.
@@ -56,8 +56,8 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
    - Repo **đã version-controlled** → Codex khởi động preset **Auto**: `--sandbox workspace-write --ask-for-approval on-request` (đọc/sửa/chạy lệnh trong workspace tự động; ra ngoài workspace hoặc cần network mới hỏi).
    - Repo/folder **chưa version-controlled** → mặc định **`read-only`** cho tới khi tin được (Codex có thể chờ "trust" thư mục qua onboarding prompt hoặc `/permissions`).
    - **CẤM full access với mọi người**: không chuyển sang `--sandbox danger-full-access` / `--yolo` - guide công ty mẹ cấm với toàn bộ member (gồm lead), kể cả trong container/devcontainer. Cần phạm vi lớn hơn -> `workspace-write` + rules/on-request.
-3. **Việc chạy dài, song song nhiều nhánh:** dùng git worktrees + Codex Cloud; giao plan locally rồi delegate implementation lên cloud, review diff, mở PR.
-4. **Việc lặp định kỳ:** refine prompt tới khi ổn → lên lịch **Scheduled task** hoặc automation.
+3. **Việc chạy dài, song song nhiều nhánh:** dùng git worktrees + Codex Cloud; giao plan locally rồi delegate implementation lên cloud, review diff, mở PR. **Chính sách (guide công ty mẹ): mọi thứ chạm ra ngoài workspace của team (mở PR, publish) là hành động có người review - agent không tự push; chỉ người mở/merge PR. Codex Cloud + GitHub app của workspace là đường nền tảng đã được duyệt (cloud env mặc định tắt internet); nối DỊCH VỤ NGOÀI mới vẫn phải qua quy trình duyệt §6.3.**
+4. **Việc lặp định kỳ:** refine prompt tới khi ổn → lên lịch **Scheduled task** hoặc automation. Automation chạy **read-only** (hoặc chỉ rules lệnh chỉ-đọc đã duyệt): run không người giám sát không ghi file, không mở network, không ủy quyền duyệt - màn hình duyệt nào vẫn do người phụ trách tự trả lời (guide công ty mẹ).
 5. **CI/automation (không tương tác):** dùng `codex exec` - **mặc định nó chạy sandbox read-only**; cho phép sửa file thì thêm `--sandbox workspace-write`; chốt quyền theo "least permissions". Lưu ý: **`--full-auto` đã bị gỡ** - script cũ phải đổi sang `--sandbox workspace-write`  (KHÔNG chuyển sang `--approve-for-me`: đó là ủy quyền duyệt, guide công ty mẹ cấm).
 
 ### Cẩm nang nhanh Codex (focus chính của team dev)
@@ -81,10 +81,10 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 - `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`; Docs còn có `approvals_reviewer = "auto_review"` (subagent reviewer duyệt hộ) - **chính sách team: KHÔNG dùng; màn hình duyệt luôn do chính bạn xác nhận** (guide công ty mẹ cấm đại diện duyệt).
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + allowlist/deniedlist domain (denied list luôn thắng). Proxy chỉ filter lệnh chạy trong sandbox local - web search/MCP/connector/cloud không đi qua (chi tiết §5.3).
 - `project_doc_max_bytes`: mặc định **32 KiB** cho AGENTS.md chain.
-- Web search cho chat local: **cached mode là mặc định** (dùng index do OpenAI giữ, hoạt động cả khi tắt network của lệnh); cần tin mới nhất mới `live` (`--search` cho 1 run; cấu hình `allowed_web_search_modes`).
+- Web search cho chat local: **cached mode là mặc định** (dùng index do OpenAI giữ, hoạt động cả khi tắt network của lệnh); cần tin mới nhất mới `live` (`--search` cho 1 run; cấu hình `allowed_web_search_modes`). Guide công ty mẹ: giữ `cached`/`indexed`; `live` chỉ khi cần và không có dữ liệu nhạy trong context.
 - Local Codex memories **mặc định tắt** - bật qua Settings → Personalization → "Enable Codex memories" hoặc `/memories` từng chat.
 
-**Model & effort khi thanh toán bằng ChatGPT:** GPT-6 Luna = nhẹ/nhanh nhất (chỉnh sửa nhỏ, trích xuất dữ liệu), GPT-6 Astra = mạnh nhất (mặc định nếu không cần tiết kiệm), GPT-6.1 Sol & Terra ở giữa (Terra cho viết ngắn từ tư liệu + computer-use có tiêu chí rõ). Kết hợp effort: ví dụ `Luna · Low` cho sửa nhỏ; `Luna · Extra high` cho tìm ngữ cảnh nhiều app/xếp việc.
+**Model & effort khi thanh toán bằng ChatGPT:** GPT-6 Luna = nhẹ/nhanh nhất (chỉnh sửa nhỏ, trích xuất dữ liệu), GPT-6 Astra = mạnh nhất (mặc định nếu không cần tiết kiệm), GPT-6.1 Sol & Terra ở giữa (Terra cho viết ngắn từ tư liệu + computer-use có tiêu chí rõ - lưu ý: computer-use/browser automation KHÔNG dùng trong quy trình hiện tại theo guide công ty mẹ). Kết hợp effort: ví dụ `Luna · Low` cho sửa nhỏ; `Luna · Extra high` cho tìm ngữ cảnh nhiều app/xếp việc.
 
 📚 Nguồn: [Sandbox](https://learn.chatgpt.com/docs/sandboxing) · [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) · [Codex environments](https://learn.chatgpt.com/docs/environments/modes) · [Worktrees](https://learn.chatgpt.com/docs/environments/git-worktrees) · [Non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) · [Scheduled tasks](https://learn.chatgpt.com/docs/automations) · [Long-running work](https://learn.chatgpt.com/docs/long-running-work) · [Authentication](https://learn.chatgpt.com/docs/auth) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Web search](https://learn.chatgpt.com/docs/web-search) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 
@@ -99,7 +99,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 - **Output:** định dạng, độ dài, mức chi tiết cần.
 - **Boundaries:** những gì KHÔNG được đổi/phải hỏi lại trước khi làm (1-2 ranh giới quan trọng nhất là đủ, đừng kiểm soát mọi bước).
 
-> Viết **kết quả mong muốn**, không cần chỉ từng bước trừ khi quy trình chính là quan trọng. Đặc biệt với Work/Codex: nêu **"done" trông như thế nào** (ví dụ mẫu báo cáo, definition of done, test pass).
+> Viết **kết quả mong muốn**, không cần chỉ từng bước trừ khi quy trình chính là quan trọng. Đặc biệt với Work/Codex: nêu **"done" trông như thế nào** (ví dụ mẫu báo cáo, definition of done, test pass). **Chính sách team (guide công ty mẹ): mọi Codex task chạm dữ liệu nghiệp vụ phải khai báo 4 điểm - đối tượng (thư mục/file được phép), công việc (làm gì), cấm (không xoá / không gửi ngoài / không truy cập ngoài thư mục), và bước xác nhận (xem ứng cử/diff trước khi chạy). Mẹo "1-2 boundaries" áp dụng cho chat thường; task nghiệp vụ thì 4 điểm bắt buộc.**
 
 ### 3.2 Mẹo được tài liệu chính thức khuyến nghị
 
@@ -143,8 +143,8 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 |---|---|
 | **Secrets/mã nguồn nhạy cảm tuyệt đối** (API key, token, private key, password, .env, key CI/CD, chứng chỉ) | **CẤM dán vào prompt, file đính kèm, AGENTS.md, project, memory.** Thay bằng placeholder (`$API_KEY`), tham chiếu tên biến. Nếu lỡ dán vào chat: **dừng ngay, BẢO TOÀN bằng chứng (không tự xoá chat/log), báo lead/IT-security (thêm đầu mối dữ liệu cá nhân nếu có PII) rồi revoke + rotate secret** - xoá chat chỉ khi lead/IT chỉ thị (luồng sự cố công ty mẹ: dừng -> bảo toàn -> báo cáo -> vô hiệu hoá). |
 | **Mã nguồn dự án** | Chỉ cho Codex/Work đọc ở khu vực workspace được phép; không upload cả repo của khách/hợp đồng chưa cho phép lên cloud task. Chia sẽ mã trong phạm vi quyền đã duyệt. |
-| **Dữ liệu cá nhân (PII) khách hàng** | Khử định danh (anonymize/mask) trước khi đưa vào prompt hay file đính kèm. Cân nhắc synthetic data. |
-| **Tài liệu public / nội bộ thường** | Tự do dùng để phân tích, viết doc, so sánh. |
+| **Dữ liệu cá nhân (PII) khách hàng** | TUYỆT ĐỐI không dán định danh. Quy cách masking theo guide công ty mẹ: thay bằng mã ID (bảng đối chiếu lưu riêng); **xoá** email/số điện thoại khỏi dữ liệu trước khi đưa; địa chỉ → giữ tới cấp hành chính cao nhất (tỉnh/thành); ngày sinh → nhóm tuổi (vd "30s"); nơi làm việc/trường học → ngành/vai trò/quy mô; không bao giờ dữ liệu sức khoẻ; cân nhắc synthetic data. |
+| **Tài liệu public / nội bộ thường** | Tự do dùng để phân tích, viết doc, so sánh - **chỉ khi không có credential/PII; nghi ngờ thì masking trước (xem hàng PII).** |
 
 ### 4.2 Cấu hình tài khoản & workspace (Business/Team)
 
@@ -153,10 +153,10 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 - **Business có SSO (SAML/OIDC) + xác nhận domain miễn phí; MFA là điều chỉnh từng account.** Enterprise: RBAC, **Compliance API** (audit log - chỉ Enterprise/Edu; Business không có), và **admin Business có thể xem/export/xoá hội thoại của member** - cân nhắc khi nhóm có dữ liệu rất nhạy.
 - **Temporary chat:** không vào lịch sử, không tạo memory, không dùng cải thiện model - nhưng OpenAI **giữ bản copy đến 30 ngày vì mục đích an toàn**; "save" temp chat = chuyển thành chat thường theo cài đặt cá nhân.
 - **Retention (con số đã verify):** Business - hội thoại xoá/not-saved bị xoá khỏi hệ thống trong **30 ngày** (trừ ràng buộc pháp lý); Agent mode - nội dung (chat, lịch sử duyệt web, screenshot) giữ đến khi user xoá, xoá xong purge trong **90 ngày**; project/file xoá - **30 ngày**; log của memory đã xoá - **30 ngày**.
-- **Agent mode:** Plus ~**40** tin nhắn/tháng, Pro ~400, Business/Enterprise ~40 (hoặc 30 credits/tin nhắn với flexible pricing). Cho agent **đăng nhập vào** app/site = cấp quyền nó truy cập dữ liệu nhạy (email, file, settings); OpenAI **ghi nhận rõ rủi ro prompt injection** của agent mode - bật ít app cần nhất, không gõ password vào hội thoại (dùng **takeover mode**), dừng khi nghi ngờ, xoá browser data của agent sau phiên nhạy.
-- **Memory** có thể rút từ chat cũ, file Library/Space, **và cả app kết nối (Gmail…)** - thông tin nhạy từng cấp cho app liên quan có thể "tái xuất" trong chat sau; cần containment thì dùng **project-only memory**. Memory vẫn chỉ là "lớp recall": quy tắc bắt buộc để ở `AGENTS.md`/docs (§6).
+- **Agent mode:** Plus ~**40** tin nhắn/tháng, Pro ~400, Business/Enterprise ~40 (hoặc 30 credits/tin nhắn với flexible pricing). Cho agent **đăng nhập vào** app/site = cấp quyền nó truy cập dữ liệu nhạy (email, file, settings); OpenAI **ghi nhận rõ rủi ro prompt injection** của agent mode - bật ít app cần nhất, không gõ password vào hội thoại (dùng **takeover mode**), dừng khi nghi ngờ, xoá browser data của agent sau phiên nhạy. **Lưu ý chính sách: đây là mô tả cơ chế từ docs chính thức; theo guide công ty mẹ, browser automation/computer use KHÔNG dùng trên hệ thống nghiệp vụ - browser của agent mode để OFF cho workflow của team.**
+- **Memory** có thể rút từ chat cũ, file Library/Space, **và cả app kết nối (Gmail…)** **(chính sách: connector Gmail/Drive-family không dùng cho công việc - guide công ty mẹ)** - thông tin nhạy từng cấp cho app liên quan có thể "tái xuất" trong chat sau; cần containment thì dùng **project-only memory**. Memory vẫn chỉ là "lớp recall": quy tắc bắt buộc để ở `AGENTS.md`/docs (§6).
 - **Projects:** project chia sẻ = **mọi member xem + tải được mọi file trong project**; dữ liệu project tài khoản cá nhân chỉ bị train nếu owner VÀ toàn bộ contributor đều để training ON; Business/Enterprise mặc định không train. Không để secrets trong project files.
-- **Plugins/apps/connectors:** Business **bật app mặc định BẬT** - admin audit trang Plugins sớm; Enterprise mặc định TẮT + RBAC. Có phân quyền theo app (Always ask / Allow read / low-risk / all - chế độ cuối được đánh dấu "elevated risk"), domain allowlist, DLP-lite (Drive shared drives, SharePoint/Teams sensitivity labels…). **Custom MCP app chưa được OpenAI verify** - dữ liệu gửi ra ngoài tuân theo chính sách bên thứ ba, có thể giữ lâu hơn 30 ngày.
+- **Plugins/apps/connectors:** Business **bật app mặc định BẬT** - admin audit trang Plugins sớm; Enterprise mặc định TẮT + RBAC. Có phân quyền theo app (Always ask / Allow read / low-risk / all - chế độ cuối được đánh dấu "elevated risk"), domain allowlist, DLP-lite (Drive shared drives, SharePoint/Teams sensitivity labels…; chính sách: app Google/Drive-family không cấp phát cho team; "Business bật app mặc định BẬT" là fact để audit đối chiếu, không phải quyền được dùng). **Custom MCP app chưa được OpenAI verify** - dữ liệu gửi ra ngoài tuân theo chính sách bên thứ ba, có thể giữ lâu hơn 30 ngày.
 
 ### 4.3 Hiểu về retention & dữ liệu của API
 
@@ -168,7 +168,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 ### 4.4 Cập nhật 2025-2026 cần nắm (để không áp dụng quy tắc cũ)
 
 - **Universal Usage Policies** áp dùng chung mọi sản phẩm; bản sửa đổi mới **có hiệu lực từ 2026-11-20** (thêm: cấm dùng output OpenAI để train model cạnh tranh, yêu cầu duyệt cho các use case quốc phòng/an ninh, review với các model-access intermediary) *(trang policy chặn client bot - 403 - đã verify bằng cách mở trực tiếp qua browser ngày 2026-11-12)*.
-- Policy pillar "Respect privacy": cấm profile/monitor/score cá nhân không được phép; "Empower people": **cấm tự động hoá quyết định high-stakes (tuyển dụng, tín dụng, y tế, pháp lý...) mà không có người review** - mọi workflow team xây trên ChatGPT đều phải có human review ở các quyết định loại này.
+- Policy pillar "Respect privacy": cấm profile/monitor/score cá nhân không được phép; "Empower people": **cấm tự động hoá quyết định high-stakes (tuyển dụng, tín dụng, y tế, pháp lý...) mà không có người review** - mọi workflow team xây trên ChatGPT đều phải có human review ở các quyết định loại này. **Guide công ty mẹ nghiêm ngặt hơn với tuyển dụng: quyết định hire/reject, xếp hạng ứng viên, đánh giá con người KHÔNG giao cho Codex - kể cả dạng bản nháp dùng trực tiếp; người tự đánh giá.**
 - **ChatGPT Atlas browser đã bị gỡ bỏ** - dữ liệu Atlas tách khỏi ChatGPT, xoá chat ChatGPT không xoá dữ liệu Atlas; nếu team còn dùng, phải migrate + dọn dữ liệu theo hướng dẫn của admin.
 - **Custom GPTs đang bị ngừng** (chuyển sang plugins): Enterprise dừng tạo GPT mới 2026-10-26, retirement 2026-12-11; account cá nhân không tạo GPT mới. Đừng bắt đầu workflow mới dựa trên GPTs.
 - Operator đã **gộp vào agent mode**; agent mode quota theo tháng như §4.2.
@@ -198,7 +198,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 |---|---|
 | Chỉ đọc/phân tích code | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | Sửa code trong repo version-controlled | `workspace-write` + `on-request` (preset **Auto**) |
-| CI / script không tương tác | `codex exec --sandbox read-only --ask-for-approval never` hoặc workspace-write có rules |
+| CI / script không tương tác | `codex exec --sandbox read-only --ask-for-approval never` hoặc workspace-write có rules (`never` + automation chỉ hợp lệ vì read-only: không tồn tại màn hình duyệt; ghi/network không giám sát vẫn cấm) |
 | Full access (`--yolo`) | **CẤM với mọi người theo guide công ty mẹ - không ngoại lệ container/devcontainer, lead cũng vậy** |
 
 Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"not recommended"** trong tài liệu chính thức. full-access bị CẤM tuyệt đối theo guide công ty mẹ: không ai được chuyển sang full access, kể cả trong container. Cần phạm vi lớn hơn? dùng `workspace-write` + rules/on-request và tự rà từng approval.
@@ -207,7 +207,7 @@ Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"
 
 ### 5.3 Network access
 
-- `workspace-write` **tắt network mặc định**. Muốn phép: `[sandbox_workspace_write] network_access = true` + (nếu bật `features.network_proxy`) **allowlist domain** (denied list luôn thắng).
+- `workspace-write` **tắt network mặc định**. Muốn phép: `[sandbox_workspace_write] network_access = true` + (nếu bật `features.network_proxy`) **allowlist domain** (denied list luôn thắng). **Chính sách (guide công ty mẹ): network chỉ mở cho đích nội bộ đã duyệt, bắt buộc nghiệp vụ; lệnh outbound trực tiếp (`curl`/`wget`/`scp`/`ssh`/`git push`, upload) là từ chối + báo cáo (tư thế lệnh §5.2). `live` web search là tính năng web-search của OpenAI, không phải lệnh outbound thô - nhưng mặc định dùng `cached`/`indexed`, `live` chỉ khi cần và không có dữ liệu nhạy trong context.**
 - Proxy chỉ bảo vệ **lệnh trong sandbox** - web search, MCP, connector, cloud traffic **không đi qua proxy**; kiểm soát bằng các cấu hình riêng của từng nền (vd: internet access cho cloud task mặc định OFF).
 
 ### 5.4 Human-in-the-loop (HITL) - vai trò con người không giảm
@@ -263,7 +263,7 @@ Rules file khai báo **lệnh nào được cho phép / phải hỏi / bị cấ
 - Vị trí: **personal** = `~/.agents/skills`; **dùng chung team** = commit vào `.agents/skills/` trong repo.
 - Bắt đầu nhanh với skill **`$skill-creator`** để scaffold; giữ phiên bản đầu local, sẵn sàng rồi mới share trong repo.
 - Nguồn tham khảo/khám phá: **skills.sh** ("The Agent Skills Directory" - thu thập skill từ các GitHub repos nổi bật); cũng theo dõi release notes/docs AI agent để nắm skill mới.
-- Với skill từ nguồn bên ngoài: **review như review một PR** - đọc hết SKILL.md, kiểm lệnh chạy và nguồn dữ liệu nó dùng, trước khi cài cho cả team.
+- Với skill từ nguồn bên ngoài: **review như review một PR** - đọc hết SKILL.md, kiểm lệnh chạy và nguồn dữ liệu nó dùng. **Review kiểu PR là bước kỹ thuật, không phải phê duyệt: cài chung cả team cần lead sign-off; skill kéo thêm MCP/integration/liên kết ngoài thì theo quy trình duyệt §6.3 (AI推進室) trước.**
 
 📚 Nguồn: [AGENTS.md (Codex)](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [agents.md (chuẩn mở)](https://agents.md) · [Rules](https://learn.chatgpt.com/docs/agent-configuration/rules) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) · [MCP](https://learn.chatgpt.com/docs/extend/mcp) · [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) · [Customization overview (skills)](https://learn.chatgpt.com/docs/customization/overview) · [skills.sh](https://skills.sh) · [openai/codex (GitHub)](https://github.com/openai/codex)
 
@@ -278,7 +278,7 @@ Tài liệu chính thức "Building an AI-Native Engineering Team" chia SDLC th�
 | **Plan/Phân tích requirement** | Agent đọc spec, đối chiếu codebase, đánh dấu điều mơ hồ, tách subtask, ước lượng mức độ khó | Ước lượng story point, quyết định ưu tiên/trình tự - **quyết định sản phẩm vẫn thuộc về người** |
 | **Design/Thiết kế** | Scaffold boilerplate, dựng prototype theo ảnh/figma, map design → component | Kiến trúc, pattern, chất lượng + accessibility, hướng UX |
 | **Build** | Implement feature end-to-end theo spec (data model, API, UI, test, PR description) | Rà soát kiến trúc, đường dẫn performance/nghiệp vụ quan trọng, giữ pattern codebase |
-| **Code review** | Local `/review`, GitHub `@codex review`, auto-review PR, security review | Đọc diff, quyết định merge; comment Codex là gợi ý không phải phán quyết |
+| **Code review** | Local `/review`, GitHub `@codex review`, auto-review PR, security review (các cơ chế này chỉ viết comment - không tự approve/merge) | Đọc diff, quyết định merge; comment Codex là gợi ý không phải phán quyết; mọi PR do người review và merge (guide công ty mẹ) |
 | **Test/Nghiệm thu** | Viết test, chạy pipeline chuẩn (`lint`, test suite nhỏ nhất liên quan), re-run sau khi fix | Nghiệm thu nghiệp vụ, edge case sản phẩm |
 | **Maintain/Doc** | Viết/cập nhật README, CHANGELOG, ADR từ diff; kiểm tra link tài liệu | Duyệt chuẩn tài liệu; xác nhận thông tin quan trọng |
 
@@ -308,8 +308,8 @@ Tài liệu chính thức "Building an AI-Native Engineering Team" chia SDLC th�
   - Chọn model vừa đủ (model-selection guide); task nhỏ → model nhẹ/effort thấp (Low); chỉ Medium/High/Extra High cho việc phức tạp.
   - Không nhồi prompt file khổng lồ khi chỉ cần vài phần (đính kèm phần liên quan).
   - Mặc định dùng `cached`/`indexed` web search mode; chỉ `live` khi cần mới nhất.
-  - Việc lặp lại định kỳ đã ổn định → gói scheduled automation để **tiết kiệm thời gian/ổn định quy trình** (lưu ý: mỗi lần chạy automation vẫn **tính usage như chạy thủ công** - không giảm quota).
-  - Cẩn thận với việc **mở `danger-full-access`**: web search sẽ **tự chuyển sang `live` mặc định** → rủi ro prompt injection cao hơn `cached` (docs nói cached "giảm - nhưng không loại bỏ" rủi ro; không có định giá riêng cho live).
+  - Việc lặp lại định kỳ đã ổn định → gói scheduled automation để **tiết kiệm thời gian/ổn định quy trình** (lưu ý: mỗi lần chạy automation vẫn **tính usage như chạy thủ công** - không giảm quota). Automation chạy read-only; run ghi/network không giám sát cần lead duyệt.
+  - **KHÔNG mở `danger-full-access` - guide công ty mẹ cấm với mọi người (không ngoại lệ container).** Phạm vi rộng hơn đạt qua `workspace-write` + allowlist domain nội bộ đã duyệt; web search giữ `cached`/`indexed` mặc định (docs ghi chú: full access sẽ tự chuyển search sang `live`, tăng rủi ro prompt injection - thêm một lý do để tắt).
 
 📚 Nguồn: [Pricing (ChatGPT Learn)](https://learn.chatgpt.com/docs/pricing) · [Help: using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Feature maturity](https://learn.chatgpt.com/docs/feature-maturity)
 
@@ -369,6 +369,7 @@ Liên quan codebase               -> Codex (IDE khi đang mở file, CLI khi c�
 
 # Prompt (4 phần)
 Goal / Context @file / Output format / Boundaries + "done khi nào"
+Mọi task nghiệp vụ: đối tượng / công việc / cấm / xác-nhận-trước-khi-chạy (guide công ty mẹ)
 Việc đa bước                     -> /plan trước; /goal cho mục tiêu dài
 Lượt đang chạy                   -> Codex CLI: Enter = steer, Tab = queue
 Yêu cầu nguồn                    -> web search + nêu rõ nguồn cần đính

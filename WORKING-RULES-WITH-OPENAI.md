@@ -1,6 +1,6 @@
 # WORKING RULES WITH OPENAI - IT Team Rules for ChatGPT / Codex
 
-> **Version:** 1.3 · Updated: 2026-11-13 (v1.3: aligned with the parent-company guide - full access prohibited for everyone, approval delegation banned, MCP requires AI-Promotion-Office approval and Google-family MCP is banned, browser automation prohibited on business systems, incident flow is stop/preserve/report/invalidate. v1.2.1: protected paths §5.2 + Vietnamese edition; v1.2: English canonical edition; v1.1: rules-file depth, skills.sh, model strategy; `--ephemeral` gloss fixed)
+> **Version:** 1.3.1 · Updated: 2026-11-13 (v1.3.1: round-2 parent-guide overlays - outbound/network policy, PR-is-human-reviewed, hiring stricter, masking spec, 4-point task rule, rules-file enforcement, automations read-only; v1.3: aligned with the parent-company guide - full access prohibited for everyone, approval delegation banned, MCP requires AI-Promotion-Office approval and Google-family MCP is banned, browser automation prohibited on business systems, incident flow is stop/preserve/report/invalidate. v1.2.1: protected paths §5.2 + Vietnamese edition; v1.2: English canonical edition; v1.1: rules-file depth, skills.sh, model strategy; `--ephemeral` gloss fixed)
 > **Parent-company standard:** this edition follows the parent guide **Codexアプリ安全利用ガイド-2.pdf** (9 rules, §12). Where official OpenAI docs allow a capability but the parent guide restricts it, the parent guide wins - both are marked inline.
 > **Vietnamese edition:** [`WORKING-RULES-WITH-OPENAI-VI.md`](WORKING-RULES-WITH-OPENAI-VI.md) - kept 1:1 in sync with this file.
 > **Audience:** Every team member (developer, BA, tester, lead) using a ChatGPT Plus / Pro / Business account + Codex.
@@ -59,8 +59,8 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
    - Folder that is NOT version-controlled → **`read-only`** by default until you trust it (Codex may wait for "trust" via an onboarding prompt or `/permissions`).
    - **Full access is prohibited for everyone**: never switch to `--sandbox danger-full-access` / `--yolo` - the parent guide bans it for all members (leads included), even inside containers/devcontainers. Higher scope → `workspace-write` + rules/on-request.
    - **No approval delegation**: never use `--approve-for-me` or `approvals_reviewer = "auto_review"` - the approval screen is reviewed by the responsible person personally (parent guide).
-3. **Long-running, multi-branch work:** use git worktrees + Codex Cloud; plan locally, delegate implementation to the cloud, review the diff, open a PR.
-4. **Recurring tasks:** refine the prompt until it is stable → schedule it as a **Scheduled task** / automation.
+3. **Long-running, multi-branch work:** use git worktrees + Codex Cloud; plan locally, delegate implementation to the cloud, review the diff, open a PR. **Policy (parent guide): anything reaching beyond the team workspace (opening a PR, publishing) is a human-reviewed action - the agent does not push directly; only a human merges. Codex Cloud + the workspace GitHub app are the already-approved platform path (cloud envs run offline by default); connecting NEW external services still needs the §6.3 integration/MCP approval.**
+4. **Recurring tasks:** refine the prompt until it is stable → schedule it as a **Scheduled task** / automation. Automations run **read-only** (or previously approved read-only rules only): unattended runs never write, never open the network, never delegate approvals - and any approval screen is still answered by the responsible person (parent guide).
 5. **CI/automation (non-interactive):** use `codex exec` - it **runs a read-only sandbox by default**; add `--sandbox workspace-write` to allow edits; lock permissions to the "least permissions" principle. Note: **`--full-auto` has been removed** - old scripts must switch to `--sandbox workspace-write` (do NOT migrate to `--approve-for-me`: that routes approvals to automatic review, which the parent guide bans).
 
 ### Codex quick handbook (the team's main focus)
@@ -84,10 +84,10 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 - `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`. Docs also offer `approvals_reviewer = "auto_review"` (a reviewer subagent approves prompts on your behalf) - **team policy: do NOT use it; approval screens are always reviewed by you personally** (parent guide bans approval delegation).
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + domain allowlist/deniedlist (the denied list always wins). The proxy only filters commands running inside the local sandbox - web search/MCP/connector/cloud traffic does not go through it (details in §5.3).
 - `project_doc_max_bytes`: **32 KiB** default for the AGENTS.md chain.
-- Web search for local chat: **cached mode is the default** (uses an OpenAI-maintained index, works even when the command's network is off); use `live` only when you need the latest info (`--search` for a single run; configure `allowed_web_search_modes`).
+- Web search for local chat: **cached mode is the default** (uses an OpenAI-maintained index, works even when the command's network is off); use `live` only when you need the latest info (`--search` for a single run; configure `allowed_web_search_modes`). Parent guide: keep `cached`/`indexed`; `live` only when necessary and with no sensitive data in context.
 - Local Codex memories are **off by default** - enable via Settings → Personalization → "Enable Codex memories" or per chat with `/memories`.
 
-**Models & effort when paying through ChatGPT:** GPT-6 Luna = lightest/fastest (small edits, data extraction), GPT-6 Astra = most powerful (default when you are not conserving usage), GPT-6.1 Sol & Terra in between (Terra for concise writing from supplied material + computer-use tasks with a defined outcome). Pair with effort: e.g. `Luna · Low` for small edits; `Luna · Extra high` for finding context across multiple apps/triage.
+**Models & effort when paying through ChatGPT:** GPT-6 Luna = lightest/fastest (small edits, data extraction), GPT-6 Astra = most powerful (default when you are not conserving usage), GPT-6.1 Sol & Terra in between (Terra for concise writing from supplied material + computer-use tasks with a defined outcome - note: computer-use/browser automation is not used in this operation per the parent guide). Pair with effort: e.g. `Luna · Low` for small edits; `Luna · Extra high` for finding context across multiple apps/triage.
 
 📚 Sources: [Sandbox](https://learn.chatgpt.com/docs/sandboxing) · [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) · [Codex environments](https://learn.chatgpt.com/docs/environments/modes) · [Worktrees](https://learn.chatgpt.com/docs/environments/git-worktrees) · [Non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) · [Scheduled tasks](https://learn.chatgpt.com/docs/automations) · [Long-running work](https://learn.chatgpt.com/docs/long-running-work) · [Authentication](https://learn.chatgpt.com/docs/auth) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Web search](https://learn.chatgpt.com/docs/web-search) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 
@@ -102,7 +102,7 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 - **Output:** format, length, level of detail needed.
 - **Boundaries:** what must NOT change / must be asked first (1-2 of the most important boundaries are enough - do not try to control every step).
 
-> Write the **desired result**, not step-by-step instructions, unless the process itself is the deliverable. Especially for Work/Codex: state **what "done" looks like** (e.g. a sample report, a definition of done, passing tests).
+> Write the **desired result**, not step-by-step instructions, unless the process itself is the deliverable. Especially for Work/Codex: state **what "done" looks like** (e.g. a sample report, a definition of done, passing tests). **Team policy (parent guide): every Codex task that touches business data declares the 4 points - target (allowed folders/files), work (what to do), prohibitions (no deletion / external send / access outside the folder), and a confirmation step (show candidates/diff before acting). The "1-2 boundaries" tip below applies to ordinary chats; for business-data tasks the 4 points are mandatory.**
 
 ### 3.2 Tips recommended by the official docs
 
@@ -146,8 +146,8 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 |---|---|
 | **Secrets / absolutely sensitive source code** (API keys, tokens, private keys, passwords, .env, CI/CD keys, certificates) | **NEVER paste into prompts, attachments, AGENTS.md, projects, memories.** Use placeholders (`$API_KEY`) and reference variable names. If pasted by accident: **stop, PRESERVE the evidence (do not delete the chat/log yourself), report to lead/IT-security (plus the privacy desk if personal data is involved), then revoke + rotate the secret** - the chat is deleted only when lead/IT-security instructs (parent incident flow: stop → preserve → report → invalidate). |
 | **Project source code** | Let Codex/Work read only approved workspace areas; do not upload a whole client/contract repo to cloud tasks without permission. Share code within approved access scope only. |
-| **Customer personal data (PII)** | De-identify (anonymize/mask) before putting it into prompts or attachments. Consider synthetic data. |
-| **Public / normal internal documents** | Free to use for analysis, writing docs, comparisons. |
+| **Customer personal data (PII)** | Identifiers are NEVER pasted. Parent masking spec: replace with ID codes (mapping stored separately); **delete** emails/phones from data before passing; address → keep only the top administrative unit (province/city); date of birth → age group (e.g. "30s"); workplace/school names → industry/role/size category; never health data; consider synthetic data. |
+| **Public / normal internal documents** | Free to use for analysis, writing docs, comparisons - **only when free of credentials/PII; mask first when in doubt (see the PII row).** |
 
 **Session hygiene (parent guide):** keep a separate session per business object (case/applicant/project) and re-check the clipboard before pasting - never let credentials or personal data ride along with work content.
 
@@ -160,10 +160,10 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 - **Business includes SSO (SAML/OIDC) + free domain verification; MFA is a per-account setting.** Enterprise adds RBAC, the **Compliance API** (audit logs - Enterprise/Edu only; Business does not have it), and **Business admins can view/export/delete member conversations** - consider this for very sensitive teams.
 - **Temporary chat:** not in history, no memories, not used for improvement - but OpenAI **keeps a copy for up to 30 days for safety**; "saving" a temp chat turns it into a normal chat per your personal settings.
 - **Retention (verified numbers):** Business - deleted/not-saved conversations are purged from live systems within **30 days** (except legal holds); Agent mode - content (chats, browsing history, screenshots) is kept until the user deletes it, then purged within **90 days**; project/file deletion - **30 days**; deleted-memory logs - **30 days**.
-- **Agent mode:** Plus ~**40** messages/month, Pro ~400, Business/Enterprise ~40 (or 30 credits per message with flexible pricing). Letting the agent **sign in to** an app/site = granting it access to sensitive data (email, files, settings); OpenAI **explicitly documents the prompt-injection risk** of agent mode - connect the fewest apps needed, never type passwords into the conversation (use **takeover mode**), stop when something looks off, clear the agent's browser data after sensitive sessions.
-- **Memory** can draw from old chats, Library/Space files, **and connected apps (Gmail...)** - sensitive info granted to an app can "resurface" in later chats; for containment use **project-only memory**. Memory is still just a "recall layer": mandatory rules live in `AGENTS.md`/docs (§6).
+- **Agent mode:** Plus ~**40** messages/month, Pro ~400, Business/Enterprise ~40 (or 30 credits per message with flexible pricing). Letting the agent **sign in to** an app/site = granting it access to sensitive data (email, files, settings); OpenAI **explicitly documents the prompt-injection risk** of agent mode - connect the fewest apps needed, never type passwords into the conversation (use **takeover mode**), stop when something looks off, clear the agent's browser data after sensitive sessions. **Policy note: these are official-doc mechanics; per the parent guide, browser automation/computer use are not used on business systems - the agent-mode browser stays OFF for team workflows.**
+- **Memory** can draw from old chats, Library/Space files, **and connected apps (Gmail...)** **(policy: Gmail/Drive-family connectors are not used for work - parent guide)** - sensitive info granted to an app can "resurface" in later chats; for containment use **project-only memory**. Memory is still just a "recall layer": mandatory rules live in `AGENTS.md`/docs (§6).
 - **Projects:** a shared project = **every member can view + download every file in it**; a personal-account project is used for training only if the owner AND all contributors have training ON; Business/Enterprise default to no training. Never keep secrets in project files.
-- **Plugins/apps/connectors:** Business has apps **ON by default** - admins should audit the Plugins page early; Enterprise defaults to OFF + RBAC. Per-app permission modes exist (Always ask / Allow read / low-risk / all - the last is flagged "elevated risk"), domain allowlists, and DLP-lite (Drive shared drives, SharePoint/Teams sensitivity labels...). **Custom MCP apps are not OpenAI-verified** - data sent to third parties follows their policy and may be kept longer than 30 days.
+- **Plugins/apps/connectors:** Business has apps **ON by default** - admins should audit the Plugins page early; Enterprise defaults to OFF + RBAC. Per-app permission modes exist (Always ask / Allow read / low-risk / all - the last is flagged "elevated risk"), domain allowlists, and DLP-lite (Drive shared drives, SharePoint/Teams sensitivity labels...; policy: Google/Drive-family apps stay unprovisioned for team use; "Business apps default ON" is a fact to audit against, not an allowance). **Custom MCP apps are not OpenAI-verified** - data sent to third parties follows their policy and may be kept longer than 30 days.
 
 ### 4.3 Retention & the API
 
@@ -175,7 +175,7 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 ### 4.4 2025-2026 updates to know (so you don't apply stale rules)
 
 - **Universal Usage Policies** apply across all products; the revised version takes **effect 2026-11-20** (adds: bans on using OpenAI output to train competing models, approval requirements for defense/security use cases, review requirements for model-access intermediaries) *(the policy page blocks scripted clients - 403 - verified by opening it directly in a browser on 2026-11-12)*.
-- Policy pillar "Respect privacy": no unauthorized profiling/monitoring/scoring of people; "Empower people": **no automating high-stakes decisions (hiring, credit, health, legal...) without human review** - every workflow the team builds on ChatGPT must keep a human in the loop for decisions of this kind.
+- Policy pillar "Respect privacy": no unauthorized profiling/monitoring/scoring of people; "Empower people": **no automating high-stakes decisions (hiring, credit, health, legal...) without human review** - every workflow the team builds on ChatGPT must keep a human in the loop for decisions of this kind. **Parent guide is stricter for hiring: recruitment decisions (hire/reject), candidate ranking and person evaluation are NEVER delegated to Codex - not even as drafts used directly; humans make these judgments themselves.**
 - **The ChatGPT Atlas browser has been retired** - Atlas data is separate from ChatGPT and deleting ChatGPT chats does not delete Atlas data; if the team still used it, migrate + clean up per the admin guidance.
 - **Custom GPTs are being discontinued** (migrating to plugins): Enterprise stops new GPT creation 2026-10-26, retirement 2026-12-11; personal accounts cannot create new GPTs. Do not start new workflows on GPTs.
 - Operator has been **merged into agent mode**; agent mode quota is per month as in §4.2.
@@ -205,20 +205,20 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 |---|---|
 | Read-only / code analysis | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | Editing code in a version-controlled repo | `workspace-write` + `on-request` (the **Auto** preset) |
-| CI / non-interactive scripts | `codex exec --sandbox read-only --ask-for-approval never`, or workspace-write with rules |
+| CI / non-interactive scripts | `codex exec --sandbox read-only --ask-for-approval never`, or workspace-write with rules (`never` + automation is acceptable ONLY for read-only: no approval screens exist; unattended write/network stays banned) |
 | Full access ("full access" / `--yolo`) | **PROHIBITED for everyone by the parent guide - no container/devcontainer exception, leads included** |
 
 Hard rule: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) is **"not recommended"** in the official docs and **prohibited outright by the parent-company guide: no one switches to full access, including inside containers.** Need broader scope? Use `workspace-write` + rules/on-request - and review every approval yourself.
 
 **Approval posture (parent guide):** prefer "this time only" when permitting anything; a persistent "always allow" is reserved for safe read-only operations - never for external sends, deletions, authentication, or Drive-family integrations.
 
-**Command posture (parent guide appendix):** read-only inspection commands (`cat`, `head`, `tail`, `grep`, `find`, `ls`, `pwd`, `git status/diff`) inside the working folder are approvable after checking content; state-changing operations (`mv`, `cp`, `mkdir`, `sed -i`, output redirection `>`) require reviewing the candidate list first; **deny**: `rm` / `rm -rf` (deletion is irreversible); **deny and report**: `curl` / `wget` / `scp` / `ssh` / `git push` (external transfer), `cat .env` / `env` / `sudo` / `chmod 777` (credential read-out, permission loosening). Unsure about a command? Ask Codex "explain what this command does" before deciding.
+**Command posture (parent guide appendix):** read-only inspection commands (`cat`, `head`, `tail`, `grep`, `find`, `ls`, `pwd`, `git status/diff`) inside the working folder are approvable after checking content; state-changing operations (`mv`, `cp`, `mkdir`, `sed -i`, output redirection `>`) require reviewing the candidate list first; **deny**: `rm` / `rm -rf` (deletion is irreversible); **deny and report**: `curl` / `wget` / `scp` / `ssh` / `git push` (external transfer), `cat .env` / `env` / `sudo` / `chmod 777` (credential read-out, permission loosening). Unsure about a command? Ask Codex "explain what this command does" before deciding. **Enforcement: the posture is enforced mechanically with the rules file - commit `.codex/rules/` with `prefix_rule` entries: `rm` → `forbidden`; `mv` / `cp` / `sed -i` / output `>` → `prompt`; `git push` → `forbidden` (project layer, trusted). Writes inside the sandbox do NOT trigger approval screens, so the rules file is what makes this posture hold.**
 
 **Protected paths inside writable roots:** even under the default `workspace-write` policy, a few paths are always protected read-only, recursively: `.git` (directory or pointer file - the resolved Git directory too), `.agents`, `.codex`, `.aws`. That is how Codex prevents the agent from rewriting its own configuration, AWS credentials, or git history. Everything else in the writable root stays writable; ordinary folders like `node_modules` or `src` are not on this special list.
 
 ### 5.3 Network access
 
-- `workspace-write` has the network **off by default**. To allow it: `[sandbox_workspace_write] network_access = true` + (if you enable `features.network_proxy`) **domain allowlists** (the denied list always wins).
+- `workspace-write` has the network **off by default**. To allow it: `[sandbox_workspace_write] network_access = true` + (if you enable `features.network_proxy`) **domain allowlists** (the denied list always wins). **Policy (parent guide): network is opened only for strictly necessary, already-approved internal destinations; direct outbound commands (`curl`/`wget`/`scp`/`ssh`/`git push`, uploads) are deny-and-report (§5.2 command posture). `live` web search is an OpenAI-mediated web-search feature, not a raw outbound command - but keep `cached`/`indexed` by default, and use `live` only when necessary with no sensitive data in context.**
 - The proxy only protects **commands inside the sandbox** - web search, MCP, connectors, cloud traffic **do not go through the proxy**; control each separately with its own settings (e.g. internet access for cloud tasks defaults to OFF).
 
 ### 5.4 Human-in-the-loop (HITL) - the human role does not shrink
@@ -274,7 +274,7 @@ The rules file declares which commands are **allowed / must-ask / forbidden to r
 - Locations: **personal** = `~/.agents/skills`; **team-shared** = committed to `.agents/skills/` in the repo.
 - Get started fast with the **`$skill-creator`** skill to scaffold; keep the first version local, share it in the repo once it is ready.
 - Reference hubs/ discovery: **skills.sh** ("The Agent Skills Directory" - collects skills from notable GitHub repos); also follow AI-agent release notes/docs to catch new skills.
-- For third-party skills: **review like a PR** - read the whole SKILL.md, check the commands it runs and the data sources it uses, before installing it for the whole team.
+- For third-party skills: **review like a PR** - read the whole SKILL.md, check the commands it runs and the data sources it uses. **PR-style review is the technical step, not the approval: team-wide installs need lead sign-off, and a skill that adds MCP/integrations/external connections follows the §6.3 approval flow (AI推進室) first.**
 
 📚 Sources: [AGENTS.md (Codex)](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [agents.md (open standard)](https://agents.md) · [Rules](https://learn.chatgpt.com/docs/agent-configuration/rules) · [Config reference](https://learn.chatgpt.com/docs/config-file/config-reference) · [MCP](https://learn.chatgpt.com/docs/extend/mcp) · [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) · [Customization overview (skills)](https://learn.chatgpt.com/docs/customization/overview) · [skills.sh](https://skills.sh) · [openai/codex (GitHub)](https://github.com/openai/codex)
 
@@ -289,7 +289,7 @@ The official "Building an AI-Native Engineering Team" guide splits the SDLC into
 | **Plan / requirements analysis** | Agent reads the spec, cross-references the codebase, flags ambiguities, breaks out subtasks, estimates difficulty | Story-point estimation, priority/sequence decisions - **product decisions stay human** |
 | **Design** | Scaffold boilerplate, prototype from images/figma, map design → components | Architecture, patterns, quality + accessibility, UX direction |
 | **Build** | Implement features end-to-end per spec (data model, API, UI, tests, PR description) | Review critical architecture/performance paths, keep codebase patterns |
-| **Code review** | Local `/review`, GitHub `@codex review`, automatic PR review, security review | Read the diff, decide the merge; Codex comments are suggestions, not verdicts |
+| **Code review** | Local `/review`, GitHub `@codex review`, automatic PR review, security review (these only write comments - never approve/merge) | Read the diff, decide the merge; Codex comments are suggestions, not verdicts; every PR is reviewed and merged by a human (parent guide) |
 | **Test / acceptance** | Write tests, run the standard pipeline (`lint`, the smallest relevant test suites), re-run after fixes | Business acceptance, product edge cases |
 | **Maintain / Docs** | Write/update README, CHANGELOG, ADRs from diffs; check doc links | Own documentation standards; verify important information |
 
@@ -319,8 +319,8 @@ The official "Building an AI-Native Engineering Team" guide splits the SDLC into
   - Right-size the model (model-selection guide); small tasks → light model/low effort (Low); Medium/High/Extra High only for complex work.
   - Do not stuff enormous files into prompts when only a slice is needed (attach the relevant part).
   - Default to the `cached`/`indexed` web search mode; use `live` only when you need the latest.
-  - For stable recurring work → schedule automation to **save time / keep the process consistent** (note: each automated run **counts usage like a manual run** - it does not reduce quota).
-  - Be careful opening **`danger-full-access`**: web search silently **switches to `live` by default** → higher prompt-injection risk than `cached` (docs say cached "lowers - but doesn't remove -" the risk; there is no separate price for live).
+  - For stable recurring work → schedule automation to **save time / keep the process consistent** (note: each automated run **counts usage like a manual run** - it does not reduce quota). Automations run read-only; unattended write/network runs need lead approval.
+  - **Do NOT open `danger-full-access` - prohibited for everyone by the parent guide (no container exception).** Wider reach happens through `workspace-write` + approved internal-domain allowlist; web search stays `cached`/`indexed` by default (docs note: full access would silently switch search to `live`, raising prompt-injection risk - one more reason it stays off).
 
 📚 Sources: [Pricing (ChatGPT Learn)](https://learn.chatgpt.com/docs/pricing) · [Help: using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Feature maturity](https://learn.chatgpt.com/docs/feature-maturity)
 
@@ -381,6 +381,7 @@ Codebase work                     -> Codex (IDE when files are open, CLI when yo
 
 # Prompt (4 parts)
 Goal / Context @file / Output format / Boundaries + "when is it done"
+Every business-data task: target / work / prohibitions / confirm-before-act (parent guide)
 Multi-step task                   -> /plan first; /goal for long-running goals
 While the agent runs              -> Codex CLI: Enter = steer, Tab = queue
 Need sources                      -> web search + require citations
