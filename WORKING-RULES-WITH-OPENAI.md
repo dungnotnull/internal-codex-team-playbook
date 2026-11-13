@@ -59,9 +59,9 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
    - Folder that is NOT version-controlled → **`read-only`** by default until you trust it (Codex may wait for "trust" via an onboarding prompt or `/permissions`).
    - **Full access is prohibited for everyone**: never switch to `--sandbox danger-full-access` / `--yolo` - the parent guide bans it for all members (leads included), even inside containers/devcontainers. Higher scope → `workspace-write` + rules/on-request.
    - **No approval delegation**: never use `--approve-for-me` or `approvals_reviewer = "auto_review"` - the approval screen is reviewed by the responsible person personally (parent guide).
-3. **Long-running, multi-branch work:** use git worktrees + Codex Cloud; plan locally, delegate implementation to the cloud, review the diff, open a PR. **Policy (parent guide): anything reaching beyond the team workspace (opening a PR, publishing) is a human-reviewed action - the agent does not push directly; only a human merges. Codex Cloud + the workspace GitHub app are platform features already provisioned on the parent-approved workspace (no per-run AI推進室 request needed - cloud envs run offline by default). This is NOT a blanket approval: opening a PR happens via the GitHub app, it is never merged automatically, and **connecting NEW external services (or changing the app permissions) still needs the §6.3 integration/MCP approval (AI推進室)**.**
+3. **Long-running, multi-branch work:** use git worktrees + Codex Cloud; plan locally, delegate implementation to the cloud, review the diff, open a PR. **Policy (parent guide): anything reaching beyond the team workspace (opening a PR, publishing) is a human-reviewed action - the agent does not push directly; only a human merges. Codex Cloud + the workspace GitHub app require a ONE-TIME AI推進室 (Kido) confirmation to be added to the workflow (the parent guide says "approved local working folder" - cloud work is not local, so this is an explicit approved exception, not a default right). After that one-time confirmation: no per-run request is needed - but PRs are still never merged automatically, and **connecting NEW external services (or changing app permissions) needs the §6.3 approval flow again**.**
 4. **Recurring tasks:** refine the prompt until it is stable → schedule it as a **Scheduled task** / automation. Automations run **read-only** (or previously approved read-only rules only): unattended runs never write, never open the network, never delegate approvals - and any approval screen is still answered by the responsible person (parent guide).
-5. **CI/automation (non-interactive):** use `codex exec` - it **runs a read-only sandbox by default**; add `--sandbox workspace-write` to allow edits; lock permissions to the "least permissions" principle. Note: **`--full-auto` has been removed** - old scripts must switch to `--sandbox workspace-write` (do NOT migrate to `--approve-for-me`: that routes approvals to automatic review, which the parent guide bans).
+5. **CI/automation (non-interactive):** use `codex exec` - unattended runs stay **read-only ONLY** (`--sandbox read-only --ask-for-approval never`); there is no unattended workspace-write in this operation. For attended runs, add `--sandbox workspace-write` and lock permissions to the "least permissions" principle. Note: **`--full-auto` has been removed** - old scripts must switch to `--sandbox workspace-write` (do NOT migrate to `--approve-for-me`: that routes approvals to automatic review, which the parent guide bans).
 
 ### Codex quick handbook (the team's main focus)
 
@@ -205,7 +205,7 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 |---|---|
 | Read-only / code analysis | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | Editing code in a version-controlled repo | `workspace-write` + `on-request` (the **Auto** preset) |
-| CI / non-interactive scripts | `codex exec --sandbox read-only --ask-for-approval never`, or workspace-write with rules (`never` + automation is acceptable ONLY for read-only: no approval screens exist; unattended write/network stays banned) |
+| CI / non-interactive scripts | `codex exec --sandbox read-only --ask-for-approval never` - unattended = read-only ONLY (writes/network require an attended session with human approval screens) |
 | Full access ("full access" / `--yolo`) | **PROHIBITED for everyone by the parent guide - no container/devcontainer exception, leads included** |
 
 Hard rule: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) is **"not recommended"** in the official docs and **prohibited outright by the parent-company guide: no one switches to full access, including inside containers.** Need broader scope? Use `workspace-write` + rules/on-request - and review every approval yourself.
@@ -404,7 +404,7 @@ workspace-write + on-request (Auto)-> repo default
 codex exec --sandbox read-only --ask-for-approval never -> CI
 --yolo / danger-full-access       -> PROHIBITED (parent guide) - for everyone
 Approval delegation (auto_review / --approve-for-me) -> banned; you review each approval screen
-network_access = true             -> only when needed + domain allowlist
+network_access = true             -> only when needed + allowlist of approved internal destinations (parent guide - outbound is deny-and-report)
 
 # Safety
 Absolutely never: secrets, .env, private keys, customer PII, unapproved sensitive source

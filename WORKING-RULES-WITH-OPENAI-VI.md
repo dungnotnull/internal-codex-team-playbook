@@ -56,9 +56,9 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
    - Repo **đã version-controlled** → Codex khởi động preset **Auto**: `--sandbox workspace-write --ask-for-approval on-request` (đọc/sửa/chạy lệnh trong workspace tự động; ra ngoài workspace hoặc cần network mới hỏi). **Lưu ý tư thế lệnh: lệnh ghi trong sandbox không tự bật màn hình duyệt - các rule phá dữ liệu (§5.2) được thực thi bằng file `.codex/rules/` của project (`rm`→forbidden, `mv`/`cp`/`sed -i`→prompt, `git push`→forbidden).**
    - Repo/folder **chưa version-controlled** → mặc định **`read-only`** cho tới khi tin được (Codex có thể chờ "trust" thư mục qua onboarding prompt hoặc `/permissions`).
    - **CẤM full access với mọi người**: không chuyển sang `--sandbox danger-full-access` / `--yolo` - guide công ty mẹ cấm với toàn bộ member (gồm lead), kể cả trong container/devcontainer. Cần phạm vi lớn hơn -> `workspace-write` + rules/on-request.
-3. **Việc chạy dài, song song nhiều nhánh:** dùng git worktrees + Codex Cloud; giao plan locally rồi delegate implementation lên cloud, review diff, mở PR. **Chính sách (guide công ty mẹ): mọi thứ chạm ra ngoài workspace của team (mở PR, publish) là hành động có người review - agent không tự push; mở PR trong luồng Cloud là một phần của luồng nền tảng đã duyệt, còn merge thì chỉ người. Codex Cloud + GitHub app của workspace là tính năng nền tảng đã cấp phát sẵn trên workspace được phê duyệt của công ty mẹ (không cần xin AI推進室 cho từng run; cloud env mặc định tắt internet). Điều này KHÔNG phải phê duyệt trọn gói: mở PR đi qua GitHub app nhưng **merge luôn là người**; **nối dịch vụ ngoài MỚI (hoặc thay đổi quyền của app) vẫn phải qua duyệt §6.3 (AI推進室)**.**
+3. **Việc chạy dài, song song nhiều nhánh:** dùng git worktrees + Codex Cloud; giao plan locally rồi delegate implementation lên cloud, review diff, mở PR. **Chính sách (guide công ty mẹ): mọi thứ chạm ra ngoài workspace của team (mở PR, publish) là hành động có người review - agent không tự push; mở PR trong luồng Cloud là một phần của luồng nền tảng đã duyệt, còn merge thì chỉ người. Codex Cloud + GitHub app cần **AI推進室 (Kido) xác nhận MỘT LẦN** khi đưa vào nghiệp vụ (guide nói "approved local working folder" - cloud không phải local, nên đây là ngoại lệ được duyệt chính thức, không phải quyền mặc định). Sau xác nhận một lần: không cần run nào cũng xin - nhưng PR **không bao giờ tự merge**, và **nối dịch vụ ngoài MỚI/thay đổi quyền app lại phải qua duyệt §6.3**.**
 4. **Việc lặp định kỳ:** refine prompt tới khi ổn → lên lịch **Scheduled task** hoặc automation. Automation chạy **read-only** (hoặc chỉ rules lệnh chỉ-đọc đã duyệt): run không người giám sát không ghi file, không mở network, không ủy quyền duyệt - màn hình duyệt nào vẫn do người phụ trách tự trả lời (guide công ty mẹ).
-5. **CI/automation (không tương tác):** dùng `codex exec` - **mặc định nó chạy sandbox read-only**; cho phép sửa file thì thêm `--sandbox workspace-write`; chốt quyền theo "least permissions". Lưu ý: **`--full-auto` đã bị gỡ** - script cũ phải đổi sang `--sandbox workspace-write`  (KHÔNG chuyển sang `--approve-for-me`: đó là ủy quyền duyệt, guide công ty mẹ cấm).
+5. **CI/automation (không tương tác):** dùng `codex exec` - run không giám sát **chỉ read-only** (`--sandbox read-only --ask-for-approval never`); KHÔNG có unattended workspace-write trong quy trình. Run có người giám sát cần sửa file thì thêm `--sandbox workspace-write`; chốt quyền theo "least permissions". Lưu ý: **`--full-auto` đã bị gỡ** - script cũ phải đổi sang `--sandbox workspace-write`  (KHÔNG chuyển sang `--approve-for-me`: đó là ủy quyền duyệt, guide công ty mẹ cấm).
 
 ### Cẩm nang nhanh Codex (focus chính của team dev)
 
@@ -198,7 +198,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 |---|---|
 | Chỉ đọc/phân tích code | `sandbox_mode = "read-only"` + `approval_policy = "on-request"` |
 | Sửa code trong repo version-controlled | `workspace-write` + `on-request` (preset **Auto**) |
-| CI / script không tương tác | `codex exec --sandbox read-only --ask-for-approval never` hoặc workspace-write có rules (`never` + automation chỉ hợp lệ vì read-only: không tồn tại màn hình duyệt; ghi/network không giám sát vẫn cấm) |
+| CI / script không tương tác | `codex exec --sandbox read-only --ask-for-approval never`  - unattended = CHỈ read-only (ghi/network cần session có người với màn hình duyệt đầy đủ) |
 | Full access (`--yolo`) | **CẤM với mọi người theo guide công ty mẹ - không ngoại lệ container/devcontainer, lead cũng vậy** |
 
 Chốt cứng: `--dangerously-bypass-approvals-and-sandbox` (alias `--yolo`) **"not recommended"** trong tài liệu chính thức. full-access bị CẤM tuyệt đối theo guide công ty mẹ: không ai được chuyển sang full access, kể cả trong container. Cần phạm vi lớn hơn? dùng `workspace-write` + rules/on-request và tự rà từng approval.
@@ -324,7 +324,7 @@ Tài liệu chính thức "Building an AI-Native Engineering Team" chia SDLC th�
   - Chọn model vừa đủ (model-selection guide); task nhỏ → model nhẹ/effort thấp (Low); chỉ Medium/High/Extra High cho việc phức tạp.
   - Không nhồi prompt file khổng lồ khi chỉ cần vài phần (đính kèm phần liên quan).
   - Mặc định dùng `cached`/`indexed` web search mode; chỉ `live` khi cần mới nhất.
-  - Việc lặp lại định kỳ đã ổn định → gói scheduled automation để **tiết kiệm thời gian/ổn định quy trình** (lưu ý: mỗi lần chạy automation vẫn **tính usage như chạy thủ công** - không giảm quota). Automation và CI chạy **chỉ read-only** (theo §5.2, unattended duy nhất là read-only - không có màn hình duyệt để ủy quyền). Task nghiệp vụ cần ghi tự động → redesign thành attended hoặc read-only; lệch ra khỏi quy trình cần lead duyệt và ghi lại.
+  - Việc lặp lại định kỳ đã ổn định → gói scheduled automation để **tiết kiệm thời gian/ổn định quy trình** (lưu ý: mỗi lần chạy automation vẫn **tính usage như chạy thủ công** - không giảm quota). Automation và CI chạy **chỉ read-only** (theo §5.2, unattended duy nhất là read-only - không có màn hình duyệt để ủy quyền). Task nghiệp vụ cần ghi tự động → redesign thành attended hoặc read-only; yêu cầu đó được xem lại hoặc tách thành các bước read-only có người giám sát..
   - **KHÔNG mở `danger-full-access` - guide công ty mẹ cấm với mọi người (không ngoại lệ container).** Phạm vi rộng hơn đạt qua `workspace-write` + allowlist domain nội bộ đã duyệt; web search giữ `cached`/`indexed` mặc định (docs ghi chú: full access sẽ tự chuyển search sang `live`, tăng rủi ro prompt injection - thêm một lý do để tắt).
 
 📚 Nguồn: [Pricing (ChatGPT Learn)](https://learn.chatgpt.com/docs/pricing) · [Help: using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan) · [Model selection](https://learn.chatgpt.com/docs/model-selection) · [Feature maturity](https://learn.chatgpt.com/docs/feature-maturity)
@@ -395,7 +395,7 @@ read-only + on-request            -> phân tích, không sửa
 workspace-write + on-request (Auto)-> default cho repo
 codex exec --sandbox read-only --ask-for-approval never -> CI
 --yolo / danger-full-access       -> CẤM (guide công ty mẹ) - với mọi người
-network_access = true             -> chỉ khi cần + allowlist domain
+network_access = true             -> chỉ khi cần + allowlist đích NỘI BỘ đã duyệt (guide: outbound = từ chối + báo cáo)
 
 # An toàn
 Tuyệt đối không: secret, .env, private key, PII khách, source nhạy chưa duyệt
