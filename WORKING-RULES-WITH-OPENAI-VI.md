@@ -1,6 +1,6 @@
 # WORKING RULES WITH OPENAI - Quy tắc làm việc với ChatGPT / Codex cho Team IT
 
-> **Phiên bản:** 1.3.1 · Ngày cập nhật: 2026-11-13 (v1.3.1: round-2 - chính sách outbound/PR/tuyển dụng/masking/4-điểm/rules-enforcement/automation read-only; v1.3: align guide công ty mẹ - cấm full access cho mọi người, cấm đại diện duyệt approval, MCP cần duyệt của AI推進室 + cấm Google-family MCP, cấm browser automation cho nghiệp vụ, luồng sự cố: dừng/bảo toàn/báo cáo/vô hiệu hoá; v1.2.1: bổ sung đoạn protected paths §5.2; song hành 1:1 với bản tiếng Anh làm chuẩn **[WORKING-RULES-WITH-OPENAI.md](WORKING-RULES-WITH-OPENAI.md)**) (v1.1: §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược model §8; sửa gloss `--ephemeral`)
+> **Phiên bản:** 1.3.2 · Ngày cập nhật: 2026-11-13 (v1.3.2: bảng tư thế lệnh + `.codex/rules/default.rules`; unattended=chỉ read-only; 4 điểm cho mọi task Codex; skills cần AI推進室 duyệt; v1.3.1: round-2 - chính sách outbound/PR/tuyển dụng/masking/4-điểm/rules-enforcement/automation read-only; v1.3: align guide công ty mẹ - cấm full access cho mọi người, cấm đại diện duyệt approval, MCP cần duyệt của AI推進室 + cấm Google-family MCP, cấm browser automation cho nghiệp vụ, luồng sự cố: dừng/bảo toàn/báo cáo/vô hiệu hoá; v1.2.1: bổ sung đoạn protected paths §5.2; song hành 1:1 với bản tiếng Anh làm chuẩn **[WORKING-RULES-WITH-OPENAI.md](WORKING-RULES-WITH-OPENAI.md)**) (v1.1: §6.2 Rules file chi tiết, §6.4 Skills + skills.sh, chiến lược model §8; sửa gloss `--ephemeral`)
 > **Đối tượng:** Toàn bộ thành viên team (developer, BA, tester, lead) sử dụng tài khoản ChatGPT Plus / Pro / Business + Codex.
 > **Điều kiện đọc:** Đọc hết file này trước khi bắt đầu dùng ChatGPT/Codex cho công việc dự án. Sau đó làm bài trắc nghiệm **quiz/QUIZ-OPENAI-RULES.html** (40 câu, thang điểm 10, có bản tiếng Nhật ở nút ngôn ngữ phía trên).
 > **Chuẩn công ty mẹ:** nội dung theo guide công ty mẹ Codexアプリ安全利用ガイド-2.pdf (9 quy tắc). Nếu docs OpenAI cho phép một capability nhưng guide công ty mẹ giới hạn thì guide thắng - cả hai được đánh dấu ngay tại chỗ. dưới đây được tổng hợp từ tài liệu chính thức của OpenAI (ChatGPT Learn docs, Help Center, platform docs), các paper uy tín đã được verify link ngày 2026-11-12. Link nguồn đầy đủ nằm ở phần **§12. Nguồn tham khảo**.
@@ -31,7 +31,7 @@ Team đang dùng **ChatGPT trả phí (Plus/Pro/Business)** - cùng một đăng
 | Bề mặt | Dùng cho | Ghi chú |
 |---|---|---|
 | **Chat** (web/desktop/mobile) | Câu hỏi, ý tưởng, draft, phân tích requirement, tài liệu | Nhanh, rẽ nhánh từng lượt chat |
-| **ChatGPT Work** (Work mode) | Nhiệm vụ nhiều bước, nhiều nguồn/tệp, sinh deliverable (báo cáo, slide, tài liệu) để review | Tiêu hao credit nhiều hơn Chat |
+| **ChatGPT Work** (Work mode) | Nhiệm vụ nhiều bước, nhiều nguồn/tệp, sinh deliverable (báo cáo, slide, tài liệu) để review | Có thể tiêu hao allowance nhiều hơn Chat (tùy task) |
 | **Codex CLI** | Agent lập mã chạy trong terminal, automation, CI (`codex exec`) | Included trong plan; đăng nhập bằng ChatGPT |
 | **Codex IDE extension** | Agent ngay cạnh editor (VS Code/Cursor...), tự mang file đang mở làm context | IDE extension tiện nhất; CLI thì nhắc @-đường dẫn |
 | **Codex Cloud / web (chatgpt.com/codex)** | Giao tác vụ code chạy song song trên môi trường cloud cô lập; Code review PR GitHub/GitLab (GitHub: **GA**; GitLab merge request: **preview**) | Cloud **tắt internet mặc định** trừ khi bật |
@@ -77,7 +77,7 @@ Chọn bề mặt & cấu hình **theo mức rủi ro + loại việc**, không 
 
 **Config knobs chính (`config.toml`):**
 
-- `sandbox_mode`: `read-only | workspace-write | danger-full-access`.
+- `sandbox_mode`: `read-only | workspace-write | danger-full-access` (enum theo docs; chính sách team: `danger-full-access` bị CẤM - §5.2).
 - `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`; Docs còn có `approvals_reviewer = "auto_review"` (subagent reviewer duyệt hộ) - **chính sách team: KHÔNG dùng; màn hình duyệt luôn do chính bạn xác nhận** (guide công ty mẹ cấm đại diện duyệt).
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + allowlist/deniedlist domain (denied list luôn thắng). Proxy chỉ filter lệnh chạy trong sandbox local - web search/MCP/connector/cloud không đi qua (chi tiết §5.3).
 - `project_doc_max_bytes`: mặc định **32 KiB** cho AGENTS.md chain.
@@ -359,7 +359,7 @@ Tài liệu chính thức "Building an AI-Native Engineering Team" chia SDLC th�
 
 **Cá nhân:**
 - [ ] Đã ở đúng workspace Business + đúng project cho việc liên quan dự án?
-- [ ] Prompt có Goal/Context/Output/Boundaries? Có nêu "done" + verify?
+- [ ] Prompt có Goal/Context/Output/Boundaries - và với task Codex có 4 điểm (đối tượng / công việc / cấm / xác-nhận-trước-khi-chạy)? Có nêu "done" + verify?
 - [ ] Không có secret/PII trong prompt, file, AGENTS.md, project?
 - [ ] Cấu hình sandbox/approval đúng loại việc (không yolo)?
 - [ ] Kết quả đã qua: test/lint/review + kiểm tra sự thật trước khi dùng?

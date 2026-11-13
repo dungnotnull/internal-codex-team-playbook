@@ -503,7 +503,7 @@ window.QUIZ_DATA = {
           "dark: tìm ngầm không ghi log"
         ],
         correct: [0, 1, 2],
-        note: "Docs 'Web search': chat local mặc định chạy cached search; indexed là chế độ index; live dùng cho thông tin mới nhất (CLI: --search cho từng lượt chạy; cấu hình allowed_web_search_modes). Ưu tiên cached/indexed thay live để giảm rủi ro prompt injection từ trang không tin cậy.",
+        note: "Docs 'Web search': chat local mặc định chạy cached search; indexed là chế độ index; live dùng cho thông tin mới nhất (CLI: --search cho từng lượt chạy; cấu hình allowed_web_search_modes). Ưu tiên cached/indexed thay live để giảm rủi ro prompt injection từ trang không tin cậy. Chính sách team (guide công ty mẹ): mặc định cached/indexed; live chỉ khi cần và không có dữ liệu nhạy trong context",
         refs: [
           { label: "Web search - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/web-search" },
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
@@ -595,7 +595,7 @@ window.QUIZ_DATA = {
           "Codex không hỗ trợ việc chạy theo lịch"
         ],
         correct: [0],
-        note: "Docs 'Scheduled tasks': cho phép schedule recurring task chạy background (ChatGPT web/mobile; các plan đủ điều kiện có thể trigger từ app event); theo dõi recent runs trong tab Scheduled; kết hợp skills cho workflow phức tạp hơn. Với Git repo, task chạy trên worktree riêng để không đụng branch người khác.",
+        note: "Docs 'Scheduled tasks': cho phép schedule recurring task chạy background (ChatGPT web/mobile; các plan đủ điều kiện có thể trigger từ app event); theo dõi recent runs trong tab Scheduled; kết hợp skills cho workflow phức tạp hơn. Với Git repo, task chạy trên worktree riêng để không đụng branch người khác. Chính sách team: unattended chỉ chạy khi workflow ổn định và read-only (per §5.2); run ghi/network không giám sát không dùng.",
         refs: [
           { label: "Scheduled tasks - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/automations" },
           { label: "Worktrees - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/environments/git-worktrees" }
@@ -1291,7 +1291,7 @@ window.QUIZ_DATA = {
           "dark: ログを残さない隠し検索モード"
         ],
         correct: [0, 1, 2],
-        note: "公式 'Web search': ローカルチャットのデフォルトは cached。indexed はインデックス済みソース、live は最新情報用 (CLI: --search でその実行だけ live。allowed_web_search_modes で設定)。プロンプトインジェクション低減のため 'live' より cached/indexed を優先。",
+        note: "公式 'Web search': ローカルチャットのデフォルトは cached。indexed はインデックス済みソース、live は最新情報用 (CLI: --search でその実行だけ live。allowed_web_search_modes で設定)。プロンプトインジェクション低減のため 'live' より cached/indexed を優先。。チーム方針（親会社ガイド）: cached/indexed を既定に。live は必要かつ機密データが文脈に無いときだけ。",
         refs: [
           { label: "Web search - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/web-search" },
           { label: "Agent approvals & security - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/agent-approvals-security" }
@@ -1383,7 +1383,7 @@ window.QUIZ_DATA = {
           "スケジュール実行は非対応"
         ],
         correct: [0],
-        note: "公式 'Scheduled tasks': 定期タスクをバックグラウンド実行 (ChatGPT Web/モバイル、対応プランはアプリイベントのトリガーにも対応)。実行履歴は Scheduled タブ。skills と組み合わせで複雑化可能。Git リポジトリのタスクは専用 worktree で実行。",
+        note: "公式 'Scheduled tasks': 定期タスクをバックグラウンド実行 (ChatGPT Web/モバイル、対応プランはアプリイベントのトリガーにも対応)。実行履歴は Scheduled タブ。skills と組み合わせで複雑化可能。Git リポジトリのタスクは専用 worktree で実行。 チーム方針: 無人実行が許されるのは read-only の場合のみ（§5.2）- 無人の書き込み/ネットワーク実行は使いません。",
         refs: [
           { label: "Scheduled tasks - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/automations" },
           { label: "Worktrees - ChatGPT Learn", url: "https://learn.chatgpt.com/docs/environments/git-worktrees" }

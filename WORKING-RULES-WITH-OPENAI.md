@@ -1,6 +1,6 @@
 # WORKING RULES WITH OPENAI - IT Team Rules for ChatGPT / Codex
 
-> **Version:** 1.3.1 · Updated: 2026-11-13 (v1.3.1: round-2 parent-guide overlays - outbound/network policy, PR-is-human-reviewed, hiring stricter, masking spec, 4-point task rule, rules-file enforcement, automations read-only; v1.3: aligned with the parent-company guide - full access prohibited for everyone, approval delegation banned, MCP requires AI-Promotion-Office approval and Google-family MCP is banned, browser automation prohibited on business systems, incident flow is stop/preserve/report/invalidate. v1.2.1: protected paths §5.2 + Vietnamese edition; v1.2: English canonical edition; v1.1: rules-file depth, skills.sh, model strategy; `--ephemeral` gloss fixed)
+> **Version:** 1.3.2 · Updated: 2026-11-13 (v1.3.2: command-posture table + `.codex/rules/default.rules` enforcement; unattended=read-only only; 4-point rule for every Codex request; skills need AI推進室 approval; v1.3.1: round-2 parent-guide overlays - outbound/network policy, PR-is-human-reviewed, hiring stricter, masking spec, 4-point task rule, rules-file enforcement, automations read-only; v1.3: aligned with the parent-company guide - full access prohibited for everyone, approval delegation banned, MCP requires AI-Promotion-Office approval and Google-family MCP is banned, browser automation prohibited on business systems, incident flow is stop/preserve/report/invalidate. v1.2.1: protected paths §5.2 + Vietnamese edition; v1.2: English canonical edition; v1.1: rules-file depth, skills.sh, model strategy; `--ephemeral` gloss fixed)
 > **Parent-company standard:** this edition follows the parent guide **Codexアプリ安全利用ガイド-2.pdf** (9 rules, §12). Where official OpenAI docs allow a capability but the parent guide restricts it, the parent guide wins - both are marked inline.
 > **Vietnamese edition:** [`WORKING-RULES-WITH-OPENAI-VI.md`](WORKING-RULES-WITH-OPENAI-VI.md) - kept 1:1 in sync with this file.
 > **Audience:** Every team member (developer, BA, tester, lead) using a ChatGPT Plus / Pro / Business account + Codex.
@@ -33,7 +33,7 @@ The team uses **paid ChatGPT (Plus/Pro/Business)** - the same login includes the
 | Surface | Use it for | Notes |
 |---|---|---|
 | **Chat** (web/desktop/mobile) | Questions, ideas, drafts, requirements analysis, documentation | Fast, branches turn by turn |
-| **ChatGPT Work** (Work mode) | Multi-step tasks with multiple sources/files that produce deliverables (reports, slides, docs) for review | Consumes more allowance than Chat |
+| **ChatGPT Work** (Work mode) | Multi-step tasks with multiple sources/files that produce deliverables (reports, slides, docs) for review | May consume more of the allowance than Chat (depends on the task) |
 | **Codex CLI** | Coding agent in the terminal, automation, CI (`codex exec`) | Included in the plan; sign in with ChatGPT |
 | **Codex IDE extension** | Agent next to the editor (VS Code/Cursor...), automatically includes open files as context | IDE extension is the most convenient; in the CLI you mention @-paths |
 | **Codex Cloud / web (chatgpt.com/codex)** | Delegate coding tasks that run in parallel in an isolated cloud environment; PR code review for GitHub/GitLab (GitHub: **GA**; GitLab merge requests: **preview**) | Cloud has the internet **off by default** unless enabled |
@@ -80,7 +80,7 @@ Pick the surface and configuration **by risk level + task type**, not by habit:
 
 **Key config knobs (`config.toml`):**
 
-- `sandbox_mode`: `read-only | workspace-write | danger-full-access`.
+- `sandbox_mode`: `read-only | workspace-write | danger-full-access` (enum from docs; team rule: `danger-full-access` is prohibited - §5.2).
 - `approval_policy`: `on-request | never | { granular = { sandbox_approval, rules, mcp_elicitations, request_permissions, skill_approval } }`. Docs also offer `approvals_reviewer = "auto_review"` (a reviewer subagent approves prompts on your behalf) - **team policy: do NOT use it; approval screens are always reviewed by you personally** (parent guide bans approval delegation).
 - `[sandbox_workspace_write] network_access = true` + `features.network_proxy` (experimental, **off by default**) + domain allowlist/deniedlist (the denied list always wins). The proxy only filters commands running inside the local sandbox - web search/MCP/connector/cloud traffic does not go through it (details in §5.3).
 - `project_doc_max_bytes`: **32 KiB** default for the AGENTS.md chain.
@@ -366,7 +366,7 @@ The official "Building an AI-Native Engineering Team" guide splits the SDLC into
 
 **Individual:**
 - [ ] On the right Business workspace + the right project for this work?
-- [ ] Prompt has Goal/Context/Output/Boundaries? States "done" + how to verify?
+- [ ] Prompt has Goal/Context/Output/Boundaries - and for Codex tasks the 4 points (target / work / prohibitions / confirm-before-act)? States "done" + how to verify?
 - [ ] No secrets/PII in prompts, files, AGENTS.md, projects?
 - [ ] Sandbox/approval configured for the task type (no yolo)?
 - [ ] Results have passed: test/lint/review + fact-check before use?

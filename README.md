@@ -101,6 +101,7 @@ Anti-hallucination is a hard rule in this repo:
 ├── WORKING-RULES-WITH-OPENAI.docx    # Word export of the EN canonical (Google Docs import)
 ├── WORKING-RULES-WITH-OPENAI-VI.docx # Word export of the Vietnamese edition
 ├── WORKING-RULES-WITH-OPENAI-JA.docx # Word export of the Japanese edition (translated from EN v1.2.1)
+└── .codex/rules/default.rules        # command-posture rules sample (copy into projects; `rm` forbidden, `mv/cp` prompt, `git push` forbidden)
 ├── README.md
 ├── index.html                        # landing page (root for static hosting)
 ├── quiz/
